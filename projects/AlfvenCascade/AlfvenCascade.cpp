@@ -182,6 +182,13 @@ std::vector<std::array<Real, 3>> AlfvenCascade::getV0(creal x, creal y, creal z,
 
 void AlfvenCascade::calcCellParameters(spatial_cell::SpatialCell* cell, creal& t) {}
 
+Realf probePhaseSpace(spatial_cell::SpatialCell *cell,
+                                       const uint popID,
+                                       Real vx_in, Real vy_in, Real vz_in
+      ) const {
+
+   }
+
 Realf AlfvenCascade::fillPhaseSpace(spatial_cell::SpatialCell *cell,
                                        const uint popID,
                                        const uint nRequested
