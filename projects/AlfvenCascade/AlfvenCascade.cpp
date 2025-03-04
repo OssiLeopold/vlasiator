@@ -135,16 +135,6 @@ void AlfvenCascade::getParameters() {
    RP::get("AlfvenCascade.angle", angle);
 }
 
-Real AlfvenCascade::calcPhaseSpaceDensity(creal& x, creal& y, creal& z, creal& dx, creal& dy, creal& dz, creal& vx,
-                                           creal& vy, creal& vz, creal& dvx, creal& dvy, creal& dvz,
-                                           const uint popID) const {
-   Real f = 0.0;
-   f = getMaxwellian(x + 0.5 * dx, y + 0.5 * dy, z + 0.5 * dz, vx + 0.5 * dvx, vy + 0.5 * dvy, vz + 0.5 * dvz, dvx, dvy,
-                     dvz, popID);
-
-   return f;
-}
-
 std::vector<std::array<Real, 3>> AlfvenCascade::getV0(creal x, creal y, creal z, const uint popID) const {
    std::vector<std::array<Real, 3>> V0;
    std::array<Real, 3> v = {{0.0, 0.0, 0.0}};
