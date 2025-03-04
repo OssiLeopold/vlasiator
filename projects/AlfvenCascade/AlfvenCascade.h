@@ -30,12 +30,6 @@ namespace projects {
 
 // Structure to hold parameters for each wave
 
-struct WaveParameters {
-    Real wavelength;
-    Real amplitude;
-    Real phase;
-};
-
 class AlfvenCascade : public TriAxisSearch {
 public:
    AlfvenCascade();
