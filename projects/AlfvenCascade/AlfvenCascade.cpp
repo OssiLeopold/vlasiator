@@ -135,34 +135,6 @@ void AlfvenCascade::getParameters() {
    RP::get("AlfvenCascade.angle", angle);
 }
 
-Real AlfvenCascade::getMaxwellian(creal& x, creal& y, creal& z, creal& vx, creal& vy, creal& vz,
-                                 creal& dvx, creal& dvy, creal& dvz, const uint popID) const {
-//    creal m = getObjectWrapper().particleSpecies[popID].mass;
-//    creal kB = physicalconstants::K_B;
-
-//    // Calculate total perturbation velocity from all waves
-//    Real ux = 0.0, uy = 0.0, uz = 0.0;
-
-//    for (const auto& wave : waves) {
-//        Real cosalpha = cos(angle);
-//        Real sinalpha = sin(angle);
-//        Real kwave = 2 * M_PI / wave.wavelength;
-//        Real xpar = x * cosalpha + y * sinalpha;
-       
-//        Real uperp = wave.amplitude * sin(kwave * xpar + wave.phase);
-//        Real upara = wave.amplitude * cos(kwave * xpar + wave.phase);
-       
-//        ux += -uperp * sinalpha;
-//        uy += uperp * cosalpha;
-//        uz += upara;
-//    }
-
-//    creal coef = m / (2 * M_PI * kB * T);
-//    creal f = n * sqrt(coef) * coef * exp(-coef * M_PI * (sqr(vx - ux) + sqr(vy - uy) + sqr(vz - uz)));
-
-//    return f;
-}
-
 Real AlfvenCascade::calcPhaseSpaceDensity(creal& x, creal& y, creal& z, creal& dx, creal& dy, creal& dz, creal& vx,
                                            creal& vy, creal& vz, creal& dvx, creal& dvy, creal& dvz,
                                            const uint popID) const {
@@ -181,13 +153,6 @@ std::vector<std::array<Real, 3>> AlfvenCascade::getV0(creal x, creal y, creal z,
 }
 
 void AlfvenCascade::calcCellParameters(spatial_cell::SpatialCell* cell, creal& t) {}
-
-Realf probePhaseSpace(spatial_cell::SpatialCell *cell,
-                                       const uint popID,
-                                       Real vx_in, Real vy_in, Real vz_in
-      ) const {
-      return 0;
-   }
 
 Realf AlfvenCascade::fillPhaseSpace(spatial_cell::SpatialCell *cell,
                                        const uint popID,
