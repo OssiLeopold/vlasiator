@@ -241,7 +241,7 @@ void AlfvenCascade::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_
    if (!P::isRestart) {
       auto localSize = perBGrid.getLocalSize().data();
 
-#pragma omp parallel for collapse(3)
+//#pragma omp parallel for collapse(3)
       for (int i = 0; i < localSize[0]; ++i) {
          for (int j = 0; j < localSize[1]; ++j) {
             for (int k = 0; k < localSize[2]; ++k) {
