@@ -37,7 +37,7 @@
 using namespace spatial_cell;
 
 namespace projects {
-AlfvenCascade::AlfvenCascade() : TriAxisSearch() {}
+AlfvenCascade::AlfvenCascade() : Project() {}
 AlfvenCascade::~AlfvenCascade() {}
 
 bool AlfvenCascade::initialize(void) {
