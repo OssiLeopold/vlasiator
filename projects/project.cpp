@@ -673,12 +673,6 @@ Project* createProject() {
    if(Parameters::projectName == "AlfvenCascade") {
       rvalue = new projects::AlfvenCascade;
    }
-   if(Parameters::projectName == "CircularAlfven"){
-      rvalue = new projects::CircularAlfven;
-   }
-   if(Parameters::projectName == "MultiCircularAlfven"){
-      rvalue = new projects::MultiCircularAlfven;
-   }
    if(Parameters::projectName == "Diffusion") {
       rvalue = new projects::Diffusion;
    }

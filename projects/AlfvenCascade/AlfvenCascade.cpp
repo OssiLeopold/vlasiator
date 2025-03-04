@@ -57,7 +57,7 @@ bool AlfvenCascade::initialize(void) {
    creal gamma = 5.0 / 3.0;
    creal mu0 = physicalconstants::MU_0;
 
-   rho0 = m * n; // Mass density
+   rho0 = m * n0; // Mass density
    p0 = n * kB * T; // pressure
 
    std::vector<WaveParameters> waves;
@@ -189,6 +189,89 @@ std::vector<std::array<Real, 3>> AlfvenCascade::getV0(creal x, creal y, creal z,
 }
 
 void AlfvenCascade::calcCellParameters(spatial_cell::SpatialCell* cell, creal& t) {}
+
+Realf AlfvenCascade::fillPhaseSpace(spatial_cell::SpatialCell *cell,
+                                       const uint popID,
+                                       const uint nRequested
+      ) const {
+      const AlfvenSpeciesParameters& sP = this->speciesParams[popID];
+
+      // Fetch spatial cell center coordinates
+      const Real x  = cell->parameters[CellParams::XCRD] + 0.5*cell->parameters[CellParams::DX];
+      const Real y  = cell->parameters[CellParams::YCRD] + 0.5*cell->parameters[CellParams::DY];
+      // const Real z  = cell->parameters[CellParams::ZCRD] + 0.5*cell->parameters[CellParams::DZ];
+
+      // creal mass = getObjectWrapper().particleSpecies[popID].mass;
+      // creal mu0 = physicalconstants::MU_0;
+      // creal ALFVEN_VEL = this->B0 / sqrt(mu0 * sP.rho * mass);
+
+      // creal ksi = (x * cos(this->ALPHA) + y * sin(this->ALPHA)) / this->WAVELENGTH;
+      // creal initV0X = sP.A_VEL * ALFVEN_VEL * sin(this->ALPHA) * sin(2.0 * M_PI * ksi);
+      // creal initV0Y = - sP.A_VEL * ALFVEN_VEL * cos(this->ALPHA) * sin(2.0 * M_PI * ksi);
+      // creal initV0Z = - sP.A_VEL * ALFVEN_VEL * cos(2.0 * M_PI * ksi);
+
+      // Real initRho = sP.rho;
+      // Real initT = sP.T;
+
+      creal mass = m;
+      creal mu0 = physicalconstants::MU_0;
+      Real ux = 0.0, uy = 0.0, uz = 0.0;
+
+      for (const auto& wave : waves) {
+         Real cosalpha = cos(angle);
+         Real sinalpha = sin(angle);
+         Real kwave = 2 * M_PI / wave.wavelength;
+         Real xpar = x * cosalpha + y * sinalpha;
+         
+         Real uperp = wave.amplitude * sin(kwave * xpar + wave.phase);
+         Real upara = wave.amplitude * cos(kwave * xpar + wave.phase);
+         
+         ux += -uperp * sinalpha;
+         uy += uperp * cosalpha;
+         uz += upara;
+      }
+      creal initV0X = ux;
+      creal initV0Y = uy;
+      creal initV0Z = uz;
+
+      Real initRho = n0;
+      Real initT = T;
+
+      #ifdef USE_GPU
+      vmesh::VelocityMesh *vmesh = cell->dev_get_velocity_mesh(popID);
+      vmesh::VelocityBlockContainer* VBC = cell->dev_get_velocity_blocks(popID);
+      #else
+      vmesh::VelocityMesh *vmesh = cell->get_velocity_mesh(popID);
+      vmesh::VelocityBlockContainer* VBC = cell->get_velocity_blocks(popID);
+      #endif
+      // Loop over blocks
+      Realf rhosum = 0;
+      arch::parallel_reduce<arch::null>(
+         {WID, WID, WID, nRequested},
+         ARCH_LOOP_LAMBDA (const uint i, const uint j, const uint k, const uint initIndex, Realf *lsum ) {
+            vmesh::GlobalID *GIDlist = vmesh->getGrid()->data();
+            Realf* bufferData = VBC->getData();
+            const vmesh::GlobalID blockGID = GIDlist[initIndex];
+            // Calculate parameters for new block
+            Real blockCoords[6];
+            vmesh->getBlockInfo(blockGID,&blockCoords[0]);
+            creal vxBlock = blockCoords[0];
+            creal vyBlock = blockCoords[1];
+            creal vzBlock = blockCoords[2];
+            creal dvxCell = blockCoords[3];
+            creal dvyCell = blockCoords[4];
+            creal dvzCell = blockCoords[5];
+            ARCH_INNER_BODY(i, j, k, initIndex, lsum) {
+               creal vx = vxBlock + (i+0.5)*dvxCell - initV0X;
+               creal vy = vyBlock + (j+0.5)*dvyCell - initV0Y;
+               creal vz = vzBlock + (k+0.5)*dvzCell - initV0Z;
+               const Realf value = MaxwellianPhaseSpaceDensity(vx,vy,vz,initT,initRho,mass);
+               bufferData[initIndex*WID3 + k*WID2 + j*WID + i] = value;
+               //lsum[0] += value;
+            };
+         }, rhosum);
+      return rhosum;
+   }
 
 void AlfvenCascade::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFIELD>, FS_STENCIL_WIDTH>& perBGrid,
                                     FsGrid<std::array<Real, fsgrids::bgbfield::N_BGB>, FS_STENCIL_WIDTH>& BgBGrid,
