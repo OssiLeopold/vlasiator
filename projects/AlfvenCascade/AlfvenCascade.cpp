@@ -76,7 +76,7 @@ bool AlfvenCascade::initialize(void) {
          std::cout << "Alfvén speed: " << VA << " m/s\n";
          
          for (int idx = 0; idx < nWaves; idx++) {
-             std::cout << "\nWave " << i + 1 << ":\n";
+             std::cout << "\nWave " << idx + 1 << ":\n";
              std::cout << "Wavelength: " << waves.at(idx).wavelength << " m\n";
              std::cout << "Amplitude: " << waves.at(idx).amplitude << " m/s\n";
              std::cout << "Phase: " << waves.at(idx).phase << " rad\n";
