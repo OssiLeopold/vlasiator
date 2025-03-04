@@ -59,9 +59,10 @@ protected:
    Real T;       // Temperature
    Real B;       // Background magnetic field strength
    Real p0;      // Thermal pressure
-   Real n;       // Background number density
+   Real n0;       // Background number density
    Real VA;      // Alfvén speed
    Real angle;   // Wave vector angle
+   Real m;       // Particle mass
 
    // Turbulence parameters
    int nWaves; // Number of waves in simulation

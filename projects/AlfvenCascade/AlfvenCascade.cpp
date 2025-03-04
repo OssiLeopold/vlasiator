@@ -213,7 +213,7 @@ Realf AlfvenCascade::fillPhaseSpace(spatial_cell::SpatialCell *cell,
       // Real initRho = sP.rho;
       // Real initT = sP.T;
 
-      creal mass = m;
+      creal mass = getObjectWrapper().particleSpecies[popID].mass;
       creal mu0 = physicalconstants::MU_0;
       Real ux = 0.0, uy = 0.0, uz = 0.0;
 
