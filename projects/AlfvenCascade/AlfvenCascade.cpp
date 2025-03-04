@@ -194,7 +194,7 @@ Realf AlfvenCascade::fillPhaseSpace(spatial_cell::SpatialCell *cell,
                                        const uint popID,
                                        const uint nRequested
       ) const {
-      #const AlfvenSpeciesParameters& sP = this->speciesParams[popID];
+      // const AlfvenSpeciesParameters& sP = this->speciesParams[popID];
 
       // Fetch spatial cell center coordinates
       const Real x  = cell->parameters[CellParams::XCRD] + 0.5*cell->parameters[CellParams::DX];
@@ -213,7 +213,7 @@ Realf AlfvenCascade::fillPhaseSpace(spatial_cell::SpatialCell *cell,
       // Real initRho = sP.rho;
       // Real initT = sP.T;
 
-      #creal mass = getObjectWrapper().particleSpecies[popID].mass;
+      // creal mass = getObjectWrapper().particleSpecies[popID].mass;
       creal mu0 = physicalconstants::MU_0;
       Real ux = 0.0, uy = 0.0, uz = 0.0;
 
