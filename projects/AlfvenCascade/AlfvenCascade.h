@@ -28,8 +28,6 @@
 
 namespace projects {
 
-// Structure to hold parameters for each wave
-
 class AlfvenCascade : public TriAxisSearch {
 public:
    AlfvenCascade();
@@ -67,9 +65,6 @@ protected:
    
    Real spectralIndex;            // Power law index for initial spectrum
    int randomSeed;               // Seed for random phase generation
-
-   // Vector to store wave parameters
-   std::vector<WaveParameters> waves;
 
    bool verbose;
 }; // class AlfvenCascade

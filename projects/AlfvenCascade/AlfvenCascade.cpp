@@ -63,6 +63,7 @@ bool AlfvenCascade::initialize(void) {
    rho0 = m * n; // Mass density
    p0 = n * kB * T; // pressure
 
+   std::vector<WaveParameters> waves;
    // Initialize waves based on parameters
    waves.clear();
    for (int i = 1; i < nWaves; i++) {
