@@ -55,7 +55,7 @@ bool AlfvenCascade::initialize(void) {
    std::vector<WaveParameters> waves;
    // Initialize waves based on parameters
    waves.clear();
-   for (int i = 1; i < nWaves; i++) {
+   for (int i = 0; i < nWaves; i++) {
        WaveParameters wave;
        wave.wavelength = wavelength.at(i);
        wave.amplitude = amplitude.at(i);
@@ -71,11 +71,11 @@ bool AlfvenCascade::initialize(void) {
       MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
       if (myRank == MASTER_RANK) {
          std::cout << "Initialized multi-wave turbulence simulation\n";
-         std::cout << "Number of waves: " << waves.size() << "\n";
+         std::cout << "Number of waves: " << nWaves << "\n";
          std::cout << "Background field strength: " << B << " T\n";
          std::cout << "Alfvén speed: " << VA << " m/s\n";
          
-         for (size_t i = 0; i < waves.size(); i++) {
+         for (int i = 0; i < nWaves; i++) {
              std::cout << "\nWave " << i + 1 << ":\n";
              std::cout << "Wavelength: " << waves.at(i).wavelength << " m\n";
              std::cout << "Amplitude: " << waves.at(i).amplitude << " m/s\n";
@@ -191,6 +191,8 @@ Realf AlfvenCascade::fillPhaseSpace(spatial_cell::SpatialCell *cell,
 
       Real initRho = n0;
       Real initT = T;
+
+      std::cout << "initV0X " << initV0X << " initV0Y " << initV0Y << " initV0Z " << initV0Z << " initT " << initT << " initRho " << initRho << " mass " << mass << std::endl;
 
       #ifdef USE_GPU
       vmesh::VelocityMesh *vmesh = cell->dev_get_velocity_mesh(popID);
