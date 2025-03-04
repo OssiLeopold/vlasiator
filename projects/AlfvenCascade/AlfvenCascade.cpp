@@ -186,7 +186,7 @@ Realf probePhaseSpace(spatial_cell::SpatialCell *cell,
                                        const uint popID,
                                        Real vx_in, Real vy_in, Real vz_in
       ) const {
-
+      return 0;
    }
 
 Realf AlfvenCascade::fillPhaseSpace(spatial_cell::SpatialCell *cell,
