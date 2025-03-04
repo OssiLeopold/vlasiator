@@ -96,7 +96,7 @@ void AlfvenCascade::addParameters() {
    RP::addComposing("AlfvenCascade.wavelength", "Wavelength of wave (m)");
    RP::addComposing("AlfvenCascade.amplitude", "Velocity amplitude (m/s)");
    RP::addComposing("AlfvenCascade.phase", "Initial phase (rad)");
-   RP::addComposing("AlfvenCascade.angle", "Wave angle (rad)");
+   
    
    RP::add("AlfvenCascade.n0", "Background density (1/m^3)", 1e6);
    RP::add("AlfvenCascade.B", "Background magnetic field strength (T)", 1e-8);
@@ -104,6 +104,7 @@ void AlfvenCascade::addParameters() {
    RP::add("AlfvenCascade.spectralIndex", "Power law index for initial spectrum", -5.0/3.0);
    RP::add("AlfvenCascade.randomSeed", "Seed for random phase generation", 12345);
    RP::add("AlfvenCascade.verbose", "Verbose output", 1);
+   RP::add("AlfvenCascade.angle", "Wave angle (rad)",0.0);
 }
 
 void AlfvenCascade::getParameters() {
