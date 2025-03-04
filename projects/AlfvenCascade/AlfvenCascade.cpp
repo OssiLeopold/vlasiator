@@ -40,14 +40,6 @@ namespace projects {
 AlfvenCascade::AlfvenCascade() : TriAxisSearch() {}
 AlfvenCascade::~AlfvenCascade() {}
 
-// Structure to hold wave parameters
-struct WaveParameters {
-   Real wavelength;
-   Real amplitude;
-   Real phase;
-   Real angle;
-};
-
 bool AlfvenCascade::initialize(void) {
    bool success = Project::initialize();
 

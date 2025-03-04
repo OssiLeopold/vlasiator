@@ -32,7 +32,6 @@ namespace projects {
       Real wavelength;
       Real amplitude;
       Real phase;
-      Real angle;
    };
 
    class AlfvenCascade : public TriAxisSearch {
