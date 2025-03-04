@@ -34,7 +34,6 @@ struct WaveParameters {
     Real wavelength;
     Real amplitude;
     Real phase;
-    Real angle;
 };
 
 class AlfvenCascade : public TriAxisSearch {
@@ -58,38 +57,20 @@ protected:
    virtual std::vector<std::array<Real, 3>> getV0(creal x, creal y, creal z, const uint popID) const;
 
    // Basic plasma parameters
-   Real rho0;    // Background density
+   Real rho0;    // Background mass density
    Real T;       // Temperature
    Real B;       // Background magnetic field strength
    Real p0;      // Thermal pressure
-   Real n;       // Number density
+   Real n;       // Background number density
    Real VA;      // Alfvén speed
-
-   Real wavelength1;
-   Real amplitude1;
-   Real phase1;
-   Real angle1;
-
-   Real wavelength2;
-   Real amplitude2;
-   Real phase2;
-   Real angle2;
-
-   Real wavelength3;
-   Real amplitude3;
-   Real phase3;
-   Real angle3;
-
-   Real wavelength4;
-   Real amplitude4;
-   Real phase4;
-   Real angle4;
+   Real angle;   // Wave vector angle
 
    // Turbulence parameters
-   std::vector<Real> wavelengths;  // Vector of wavelengths
-   std::vector<Real> amplitudes;   // Vector of velocity amplitudes
-   std::vector<Real> phases;       // Vector of initial phases
-   std::vector<Real> angles;       // Vector of wave angles
+   int nWaves; // Number of waves in simulation
+   std::vector<Real> wavelength;  // Vector of wavelengths
+   std::vector<Real> amplitude;   // Vector of velocity amplitudes
+   std::vector<Real> phase;       // Vector of initial phases
+   
    Real spectralIndex;            // Power law index for initial spectrum
    int randomSeed;               // Seed for random phase generation
 
