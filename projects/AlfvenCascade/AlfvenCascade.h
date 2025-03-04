@@ -28,53 +28,61 @@
 
 namespace projects {
 
-class AlfvenCascade : public TriAxisSearch {
-public:
-   AlfvenCascade();
-   virtual ~AlfvenCascade();
+   struct WaveParameters {
+      Real wavelength;
+      Real amplitude;
+      Real phase;
+      Real angle;
+   };
 
-   virtual bool initialize(void);
-   static void addParameters(void);
-   virtual void getParameters(void);
-   virtual void setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFIELD>, FS_STENCIL_WIDTH>& perBGrid,
-                                 FsGrid<std::array<Real, fsgrids::bgbfield::N_BGB>, FS_STENCIL_WIDTH>& BgBGrid,
-                                 FsGrid<fsgrids::technical, FS_STENCIL_WIDTH>& technicalGrid);
-   virtual Real calcPhaseSpaceDensity(creal& x, creal& y, creal& z, creal& dx, creal& dy, creal& dz, creal& vx,
-                                      creal& vy, creal& vz, creal& dvx, creal& dvy, creal& dvz, const uint popID) const;
-   virtual Realf fillPhaseSpace(spatial_cell::SpatialCell *cell,
-                                  const uint popID,
-                                  const uint nRequested) const override;
-   virtual void calcCellParameters(spatial_cell::SpatialCell* cell, creal& t);
-   virtual std::vector<std::array<Real, 3>> getV0(creal x, creal y, creal z, const uint popID) const;
-   virtual Realf probePhaseSpace(spatial_cell::SpatialCell *cell,
-      const uint popID,
-      Real vx_in, Real vy_in, Real vz_in) const override;
-protected:
-   Real getMaxwellian(creal& x, creal& y, creal& z, creal& vx, creal& vy, creal& vz, creal& dvx, creal& dvy, creal& dvz,
-                      const uint popID) const;
-   
+   class AlfvenCascade : public TriAxisSearch {
+   public:
+      AlfvenCascade();
+      virtual ~AlfvenCascade();
 
-   // Basic plasma parameters
-   Real rho0;    // Background mass density
-   Real T;       // Temperature
-   Real B;       // Background magnetic field strength
-   Real p0;      // Thermal pressure
-   Real n0;       // Background number density
-   Real VA;      // Alfvén speed
-   Real angle;   // Wave vector angle
-   Real m;       // Particle mass
+      virtual bool initialize(void);
+      static void addParameters(void);
+      virtual void getParameters(void);
+      virtual void setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFIELD>, FS_STENCIL_WIDTH>& perBGrid,
+                                    FsGrid<std::array<Real, fsgrids::bgbfield::N_BGB>, FS_STENCIL_WIDTH>& BgBGrid,
+                                    FsGrid<fsgrids::technical, FS_STENCIL_WIDTH>& technicalGrid);
+      virtual Real calcPhaseSpaceDensity(creal& x, creal& y, creal& z, creal& dx, creal& dy, creal& dz, creal& vx,
+                                       creal& vy, creal& vz, creal& dvx, creal& dvy, creal& dvz, const uint popID) const;
+      virtual Realf fillPhaseSpace(spatial_cell::SpatialCell *cell,
+                                    const uint popID,
+                                    const uint nRequested) const override;
+      virtual void calcCellParameters(spatial_cell::SpatialCell* cell, creal& t);
+      virtual std::vector<std::array<Real, 3>> getV0(creal x, creal y, creal z, const uint popID) const;
+      virtual Realf probePhaseSpace(spatial_cell::SpatialCell *cell,
+         const uint popID,
+         Real vx_in, Real vy_in, Real vz_in) const override;
+   protected:
+      Real getMaxwellian(creal& x, creal& y, creal& z, creal& vx, creal& vy, creal& vz, creal& dvx, creal& dvy, creal& dvz,
+                        const uint popID) const;
+      
 
-   // Turbulence parameters
-   int nWaves; // Number of waves in simulation
-   std::vector<Real> wavelength;  // Vector of wavelengths
-   std::vector<Real> amplitude;   // Vector of velocity amplitudes
-   std::vector<Real> phase;       // Vector of initial phases
-   
-   Real spectralIndex;            // Power law index for initial spectrum
-   int randomSeed;               // Seed for random phase generation
+      // Basic plasma parameters
+      Real rho0;    // Background mass density
+      Real T;       // Temperature
+      Real B;       // Background magnetic field strength
+      Real p0;      // Thermal pressure
+      Real n0;       // Background number density
+      Real VA;      // Alfvén speed
+      Real angle;   // Wave vector angle
+      Real m;       // Particle mass
 
-   bool verbose;
-}; // class AlfvenCascade
+      // Turbulence parameters
+      int nWaves; // Number of waves in simulation
+      std::vector<Real> wavelength;  // Vector of wavelengths
+      std::vector<Real> amplitude;   // Vector of velocity amplitudes
+      std::vector<Real> phase;       // Vector of initial phases
+      
+      Real spectralIndex;            // Power law index for initial spectrum
+      int randomSeed;               // Seed for random phase generation
+
+      bool verbose;
+      std::vector<WaveParameters> waves;
+   }; // class AlfvenCascade
 } // namespace projects
 
 #endif

@@ -58,7 +58,7 @@ bool AlfvenCascade::initialize(void) {
    creal mu0 = physicalconstants::MU_0;
 
    rho0 = m * n0; // Mass density
-   p0 = n * kB * T; // pressure
+   p0 = n0 * kB * T; // pressure
 
    std::vector<WaveParameters> waves;
    // Initialize waves based on parameters
@@ -143,33 +143,33 @@ void AlfvenCascade::getParameters() {
    RP::get("AlfvenCascade.angle", angle);
 }
 
-Real AlfvenCascade::getMaxwellian(creal& x, creal& y, creal& z, creal& vx, creal& vy, creal& vz,
-                                 creal& dvx, creal& dvy, creal& dvz, const uint popID) const {
-   creal m = getObjectWrapper().particleSpecies[popID].mass;
-   creal kB = physicalconstants::K_B;
+// Real AlfvenCascade::getMaxwellian(creal& x, creal& y, creal& z, creal& vx, creal& vy, creal& vz,
+//                                  creal& dvx, creal& dvy, creal& dvz, const uint popID) const {
+//    creal m = getObjectWrapper().particleSpecies[popID].mass;
+//    creal kB = physicalconstants::K_B;
 
-   // Calculate total perturbation velocity from all waves
-   Real ux = 0.0, uy = 0.0, uz = 0.0;
+//    // Calculate total perturbation velocity from all waves
+//    Real ux = 0.0, uy = 0.0, uz = 0.0;
 
-   for (const auto& wave : waves) {
-       Real cosalpha = cos(angle);
-       Real sinalpha = sin(angle);
-       Real kwave = 2 * M_PI / wave.wavelength;
-       Real xpar = x * cosalpha + y * sinalpha;
+//    for (const auto& wave : waves) {
+//        Real cosalpha = cos(angle);
+//        Real sinalpha = sin(angle);
+//        Real kwave = 2 * M_PI / wave.wavelength;
+//        Real xpar = x * cosalpha + y * sinalpha;
        
-       Real uperp = wave.amplitude * sin(kwave * xpar + wave.phase);
-       Real upara = wave.amplitude * cos(kwave * xpar + wave.phase);
+//        Real uperp = wave.amplitude * sin(kwave * xpar + wave.phase);
+//        Real upara = wave.amplitude * cos(kwave * xpar + wave.phase);
        
-       ux += -uperp * sinalpha;
-       uy += uperp * cosalpha;
-       uz += upara;
-   }
+//        ux += -uperp * sinalpha;
+//        uy += uperp * cosalpha;
+//        uz += upara;
+//    }
 
-   creal coef = m / (2 * M_PI * kB * T);
-   creal f = n * sqrt(coef) * coef * exp(-coef * M_PI * (sqr(vx - ux) + sqr(vy - uy) + sqr(vz - uz)));
+//    creal coef = m / (2 * M_PI * kB * T);
+//    creal f = n * sqrt(coef) * coef * exp(-coef * M_PI * (sqr(vx - ux) + sqr(vy - uy) + sqr(vz - uz)));
 
-   return f;
-}
+//    return f;
+// }
 
 Real AlfvenCascade::calcPhaseSpaceDensity(creal& x, creal& y, creal& z, creal& dx, creal& dy, creal& dz, creal& vx,
                                            creal& vy, creal& vz, creal& dvx, creal& dvy, creal& dvz,
@@ -194,7 +194,7 @@ Realf AlfvenCascade::fillPhaseSpace(spatial_cell::SpatialCell *cell,
                                        const uint popID,
                                        const uint nRequested
       ) const {
-      const AlfvenSpeciesParameters& sP = this->speciesParams[popID];
+      #const AlfvenSpeciesParameters& sP = this->speciesParams[popID];
 
       // Fetch spatial cell center coordinates
       const Real x  = cell->parameters[CellParams::XCRD] + 0.5*cell->parameters[CellParams::DX];
@@ -213,7 +213,7 @@ Realf AlfvenCascade::fillPhaseSpace(spatial_cell::SpatialCell *cell,
       // Real initRho = sP.rho;
       // Real initT = sP.T;
 
-      creal mass = getObjectWrapper().particleSpecies[popID].mass;
+      #creal mass = getObjectWrapper().particleSpecies[popID].mass;
       creal mu0 = physicalconstants::MU_0;
       Real ux = 0.0, uy = 0.0, uz = 0.0;
 
