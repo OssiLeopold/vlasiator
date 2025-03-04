@@ -168,11 +168,12 @@ Realf AlfvenCascade::fillPhaseSpace(spatial_cell::SpatialCell *cell,
       // Real initRho = sP.rho;
       // Real initT = sP.T;
 
-      creal mass = m;
+      creal mass = physicalconstants::MASS_PROTON;
       creal mu0 = physicalconstants::MU_0;
       Real ux = 0.0, uy = 0.0, uz = 0.0;
 
       for (const auto& wave : waves) {
+         std::cout << "angle " << angle << " wavelength " << wave.wavelength << " phase " << wave.phase << std::endl;
          Real cosalpha = cos(angle);
          Real sinalpha = sin(angle);
          Real kwave = 2 * M_PI / wave.wavelength;
