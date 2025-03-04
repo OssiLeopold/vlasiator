@@ -57,9 +57,9 @@ bool AlfvenCascade::initialize(void) {
    waves.clear();
    for (int idx = 0; idx < nWaves; idx++) {
        WaveParameters wave;
-       wave.wavelength = wavelength.at(i);
-       wave.amplitude = amplitude.at(i);
-       wave.phase = phase.at(i);
+       wave.wavelength = wavelength.at(idx);
+       wave.amplitude = amplitude.at(idx);
+       wave.phase = phase.at(idx);
        waves.push_back(wave);
    }
 
@@ -77,9 +77,9 @@ bool AlfvenCascade::initialize(void) {
          
          for (int idx = 0; idx < nWaves; idx++) {
              std::cout << "\nWave " << i + 1 << ":\n";
-             std::cout << "Wavelength: " << waves.at(i).wavelength << " m\n";
-             std::cout << "Amplitude: " << waves.at(i).amplitude << " m/s\n";
-             std::cout << "Phase: " << waves.at(i).phase << " rad\n";
+             std::cout << "Wavelength: " << waves.at(idx).wavelength << " m\n";
+             std::cout << "Amplitude: " << waves.at(idx).amplitude << " m/s\n";
+             std::cout << "Phase: " << waves.at(idx).phase << " rad\n";
              std::cout << "Angle: " << angle * 180/M_PI << " degrees\n";
          }
       }
@@ -175,11 +175,11 @@ Realf AlfvenCascade::fillPhaseSpace(spatial_cell::SpatialCell *cell,
       for (int idx = 0; idx < nWaves; idx++) {
          Real cosalpha = cos(angle);
          Real sinalpha = sin(angle);
-         Real kwave = 2 * M_PI / waves.at(i).wavelength;
+         Real kwave = 2 * M_PI / waves.at(idx).wavelength;
          Real xpar = x * cosalpha + y * sinalpha;
          
-         Real uperp = waves.at(i).amplitude * sin(kwave * xpar + waves.at(i).phase);
-         Real upara = waves.at(i).amplitude * cos(kwave * xpar + waves.at(i).phase);
+         Real uperp = waves.at(idx).amplitude * sin(kwave * xpar + waves.at(idx).phase);
+         Real upara = waves.at(idx).amplitude * cos(kwave * xpar + waves.at(idx).phase);
          
          ux += -uperp * sinalpha;
          uy += uperp * cosalpha;
@@ -254,15 +254,15 @@ void AlfvenCascade::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_
                for (int idx = 0; idx < nWaves; idx++) {
                    Real cosalpha = cos(angle);
                    Real sinalpha = sin(angle);
-                   Real kwave = 2 * M_PI / waves.at(i).wavelength;
+                   Real kwave = 2 * M_PI / waves.at(idx).wavelength;
                    Real xpar = x[0] * cosalpha + x[1] * sinalpha;
                    creal mu0 = physicalconstants::MU_0;
 
                    // Calculate B1 from v1 using Alfvén wave relation
-                   Real B1 = waves.at(i).amplitude * sqrt(mu0 * rho0);
+                   Real B1 = waves.at(idx).amplitude * sqrt(mu0 * rho0);
 
-                   Real Bperp = B1 * sin(kwave * xpar + waves.at(i).phase);
-                   Real Bpara = B1 * cos(kwave * xpar + waves.at(i).phase);
+                   Real Bperp = B1 * sin(kwave * xpar + waves.at(idx).phase);
+                   Real Bpara = B1 * cos(kwave * xpar + waves.at(idx).phase);
                    
                    Bx += -Bperp * sinalpha;
                    By += Bperp * cosalpha;
