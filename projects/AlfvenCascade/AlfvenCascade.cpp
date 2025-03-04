@@ -192,7 +192,7 @@ Realf AlfvenCascade::fillPhaseSpace(spatial_cell::SpatialCell *cell,
       Real initRho = n0;
       Real initT = T;
 
-      std::cout << "initV0X " << initV0X << " initV0Y " << initV0Y << " initV0Z " << initV0Z << " initT " << initT << " initRho " << initRho << " mass " << mass << std::endl;
+      // std::cout << "initV0X " << initV0X << " initV0Y " << initV0Y << " initV0Z " << initV0Z << " initT " << initT << " initRho " << initRho << " mass " << mass << std::endl;
 
       #ifdef USE_GPU
       vmesh::VelocityMesh *vmesh = cell->dev_get_velocity_mesh(popID);
@@ -235,11 +235,13 @@ void AlfvenCascade::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_
                                     FsGrid<fsgrids::technical, FS_STENCIL_WIDTH>& technicalGrid) {
    // Set background field
    ConstantField bgField;
-   bgField.initialize(B, 0.0, 0.0); // Background field in x-direction
+   bgField.initialize(B*cos(angle), B*sin(angle), 0.0); // Background field according to angle
    setBackgroundField(bgField, BgBGrid);
 
    if (!P::isRestart) {
       auto localSize = perBGrid.getLocalSize().data();
+
+   creal mu0 = physicalconstants::MU_0;
 
 #pragma omp parallel for collapse(3)
       for (int i = 0; i < localSize[0]; ++i) {
@@ -256,10 +258,9 @@ void AlfvenCascade::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_
                    Real sinalpha = sin(angle);
                    Real kwave = 2 * M_PI / wavelength.at(idx);
                    Real xpar = x[0] * cosalpha + x[1] * sinalpha;
-                   creal mu0 = physicalconstants::MU_0;
 
                    // Calculate B1 from v1 using Alfvén wave relation
-                   Real B1 = amplitude.at(idx) * sqrt(mu0 * rho0);
+                   Real B1 = std::pow(-1.0,idx) * amplitude.at(idx) * sqrt(mu0 * rho0);
 
                    Real Bperp = B1 * sin(kwave * xpar + phase.at(idx));
                    Real Bpara = B1 * cos(kwave * xpar + phase.at(idx));
