@@ -55,7 +55,7 @@ bool AlfvenCascade::initialize(void) {
    std::vector<WaveParameters> waves;
    // Initialize waves based on parameters
    waves.clear();
-   for (int i = 0; i < nWaves; i++) {
+   for (int idx = 0; idx < nWaves; idx++) {
        WaveParameters wave;
        wave.wavelength = wavelength.at(i);
        wave.amplitude = amplitude.at(i);
@@ -75,7 +75,7 @@ bool AlfvenCascade::initialize(void) {
          std::cout << "Background field strength: " << B << " T\n";
          std::cout << "Alfvén speed: " << VA << " m/s\n";
          
-         for (int i = 0; i < nWaves; i++) {
+         for (int idx = 0; idx < nWaves; idx++) {
              std::cout << "\nWave " << i + 1 << ":\n";
              std::cout << "Wavelength: " << waves.at(i).wavelength << " m\n";
              std::cout << "Amplitude: " << waves.at(i).amplitude << " m/s\n";
@@ -172,7 +172,7 @@ Realf AlfvenCascade::fillPhaseSpace(spatial_cell::SpatialCell *cell,
       creal mu0 = physicalconstants::MU_0;
       Real ux = 0.0, uy = 0.0, uz = 0.0;
 
-      for (int i = 0; i < nWaves; i++) {
+      for (int idx = 0; idx < nWaves; idx++) {
          Real cosalpha = cos(angle);
          Real sinalpha = sin(angle);
          Real kwave = 2 * M_PI / waves.at(i).wavelength;
@@ -251,7 +251,7 @@ void AlfvenCascade::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_
                Real Bx = 0.0, By = 0.0, Bz = 0.0;
 
                // Sum contributions from all waves
-               for (int i = 0; i < nWaves; i++) {
+               for (int idx = 0; idx < nWaves; idx++) {
                    Real cosalpha = cos(angle);
                    Real sinalpha = sin(angle);
                    Real kwave = 2 * M_PI / waves.at(i).wavelength;
