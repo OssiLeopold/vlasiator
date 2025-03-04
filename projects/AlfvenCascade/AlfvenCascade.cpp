@@ -172,15 +172,14 @@ Realf AlfvenCascade::fillPhaseSpace(spatial_cell::SpatialCell *cell,
       creal mu0 = physicalconstants::MU_0;
       Real ux = 0.0, uy = 0.0, uz = 0.0;
 
-      for (const auto& wave : waves) {
-         std::cout << "angle " << angle << " wavelength " << wave.wavelength << " phase " << wave.phase << std::endl;
+      for (int i = 0; i < nWaves; i++) {
          Real cosalpha = cos(angle);
          Real sinalpha = sin(angle);
-         Real kwave = 2 * M_PI / wave.wavelength;
+         Real kwave = 2 * M_PI / waves.at(i).wavelength;
          Real xpar = x * cosalpha + y * sinalpha;
          
-         Real uperp = wave.amplitude * sin(kwave * xpar + wave.phase);
-         Real upara = wave.amplitude * cos(kwave * xpar + wave.phase);
+         Real uperp = waves.at(i).amplitude * sin(kwave * xpar + waves.at(i).phase);
+         Real upara = waves.at(i).amplitude * cos(kwave * xpar + waves.at(i).phase);
          
          ux += -uperp * sinalpha;
          uy += uperp * cosalpha;
@@ -252,18 +251,18 @@ void AlfvenCascade::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_
                Real Bx = 0.0, By = 0.0, Bz = 0.0;
 
                // Sum contributions from all waves
-               for (const auto& wave : waves) {
+               for (int i = 0; i < nWaves; i++) {
                    Real cosalpha = cos(angle);
                    Real sinalpha = sin(angle);
-                   Real kwave = 2 * M_PI / wave.wavelength;
+                   Real kwave = 2 * M_PI / waves.at(i).wavelength;
                    Real xpar = x[0] * cosalpha + x[1] * sinalpha;
                    creal mu0 = physicalconstants::MU_0;
 
                    // Calculate B1 from v1 using Alfvén wave relation
-                   Real B1 = wave.amplitude * sqrt(mu0 * rho0);
+                   Real B1 = waves.at(i).amplitude * sqrt(mu0 * rho0);
 
-                   Real Bperp = B1 * sin(kwave * xpar + wave.phase);
-                   Real Bpara = B1 * cos(kwave * xpar + wave.phase);
+                   Real Bperp = B1 * sin(kwave * xpar + waves.at(i).phase);
+                   Real Bpara = B1 * cos(kwave * xpar + waves.at(i).phase);
                    
                    Bx += -Bperp * sinalpha;
                    By += Bperp * cosalpha;
