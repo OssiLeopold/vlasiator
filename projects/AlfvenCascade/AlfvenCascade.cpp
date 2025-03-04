@@ -80,7 +80,7 @@ bool AlfvenCascade::initialize(void) {
              std::cout << "Wavelength: " << waves.at(i).wavelength << " m\n";
              std::cout << "Amplitude: " << waves.at(i).amplitude << " m/s\n";
              std::cout << "Phase: " << waves.at(i).phase << " rad\n";
-             std::cout << "Angle: " << waves.at(i).angle * 180/M_PI << " degrees\n";
+             std::cout << "Angle: " << angle * 180/M_PI << " degrees\n";
          }
       }
    }
