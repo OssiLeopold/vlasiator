@@ -52,9 +52,6 @@ namespace projects {
                                     const uint nRequested) const override;
       virtual void calcCellParameters(spatial_cell::SpatialCell* cell, creal& t);
       virtual std::vector<std::array<Real, 3>> getV0(creal x, creal y, creal z, const uint popID) const;
-      virtual Realf probePhaseSpace(spatial_cell::SpatialCell *cell,
-         const uint popID,
-         Real vx_in, Real vy_in, Real vz_in) const override;
    protected:
       Real getMaxwellian(creal& x, creal& y, creal& z, creal& vx, creal& vy, creal& vz, creal& dvx, creal& dvy, creal& dvz,
                         const uint popID) const;
