@@ -135,8 +135,8 @@ void AlfvenCascade::getParameters() {
    RP::get("AlfvenCascade.angle", angle);
 }
 
-// Real AlfvenCascade::getMaxwellian(creal& x, creal& y, creal& z, creal& vx, creal& vy, creal& vz,
-//                                  creal& dvx, creal& dvy, creal& dvz, const uint popID) const {
+Real AlfvenCascade::getMaxwellian(creal& x, creal& y, creal& z, creal& vx, creal& vy, creal& vz,
+                                 creal& dvx, creal& dvy, creal& dvz, const uint popID) const {
 //    creal m = getObjectWrapper().particleSpecies[popID].mass;
 //    creal kB = physicalconstants::K_B;
 
@@ -161,7 +161,7 @@ void AlfvenCascade::getParameters() {
 //    creal f = n * sqrt(coef) * coef * exp(-coef * M_PI * (sqr(vx - ux) + sqr(vy - uy) + sqr(vz - uz)));
 
 //    return f;
-// }
+}
 
 Real AlfvenCascade::calcPhaseSpaceDensity(creal& x, creal& y, creal& z, creal& dx, creal& dy, creal& dz, creal& vx,
                                            creal& vy, creal& vz, creal& dvx, creal& dvy, creal& dvz,

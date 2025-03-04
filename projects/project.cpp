@@ -32,8 +32,8 @@
 
 #include "Alfven/Alfven.h"
 #include "AlfvenCascade/AlfvenCascade.h"
-#include "CircularAlfven/CircularAlfven.h"
-#include "MultiCircularAlfven/MultiCircularAlfven.h"
+//#include "CircularAlfven/CircularAlfven.h"
+//#include "MultiCircularAlfven/MultiCircularAlfven.h"
 #include "Diffusion/Diffusion.h"
 #include "Dispersion/Dispersion.h"
 #include "Distributions/Distributions.h"
@@ -79,8 +79,8 @@ namespace projects {
       // TODO add all projects' static addParameters() functions here.
       projects::Alfven::addParameters();
       projects::AlfvenCascade::addParameters();
-      projects::CircularAlfven::addParameters();
-      projects::MultiCircularAlfven::addParameters();
+      // projects::CircularAlfven::addParameters();
+      // projects::MultiCircularAlfven::addParameters();
       projects::Diffusion::addParameters();
       projects::Dispersion::addParameters();
       projects::Distributions::addParameters();
