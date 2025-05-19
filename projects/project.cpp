@@ -55,6 +55,7 @@
 #include "../backgroundfield/backgroundfield.h"
 #include "../backgroundfield/constantfield.hpp"
 #include "Shocktest/Shocktest.h"
+#include "LossCone/LossCone.h"
 #include "../sysboundary/sysboundarycondition.h"
 
 #ifdef DEBUG_VLASIATOR
@@ -100,6 +101,7 @@ namespace projects {
       projects::TestHall::addParameters();
       projects::verificationLarmor::addParameters();
       projects::Shocktest::addParameters();
+      projects::LossCone::addParameters();
       RP::add("Project_common.seed", "Seed for the RNG", 42);
 
    }
@@ -528,12 +530,12 @@ namespace projects {
       return shouldUnrefine;
    }
 
-   int Project::adaptRefinement( dccrg::Dccrg<spatial_cell::SpatialCell,dccrg::Cartesian_Geometry>& mpiGrid ) const {
+   uint64_t Project::adaptRefinement( dccrg::Dccrg<spatial_cell::SpatialCell,dccrg::Cartesian_Geometry>& mpiGrid ) const {
       phiprof::Timer refinesTimer {"Set refines"};
       int myRank;
       MPI_Comm_rank(MPI_COMM_WORLD,&myRank);
 
-      int refines {0};
+      uint64_t refines {0};
       if (!P::useAlpha1 && !P::useAlpha2 && !P::useAnisotropy && !P::useVorticity) {
          if (myRank == MASTER_RANK) {
             std::cout << "WARNING All refinement indices disabled" << std::endl;
@@ -730,6 +732,11 @@ Project* createProject() {
    if(Parameters::projectName == "Shocktest") {
       rvalue = new projects::Shocktest;
    }
+   if(Parameters::projectName == "LossCone") {
+      rvalue = new projects::LossCone;
+   }
+   
+
    if (rvalue == NULL) {
       cerr << "Unknown project name!" << endl;
       abort();
