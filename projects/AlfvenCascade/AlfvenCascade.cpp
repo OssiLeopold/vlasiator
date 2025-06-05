@@ -136,14 +136,14 @@ void AlfvenCascade::getParameters() {
    RP::get("AlfvenCascade.angle", angle);
 }
 
-std::vector<std::array<Real, 3>> AlfvenCascade::getV0(creal x, creal y, creal z, const uint popID) const {
-   std::vector<std::array<Real, 3>> V0;
-   std::array<Real, 3> v = {{0.0, 0.0, 0.0}};
-   V0.push_back(v);
-   return V0;
-}
+// std::vector<std::array<Real, 3>> AlfvenCascade::getV0(creal x, creal y, creal z, const uint popID) const {
+//    std::vector<std::array<Real, 3>> V0;
+//    std::array<Real, 3> v = {{0.0, 0.0, 0.0}};
+//    V0.push_back(v);
+//    return V0;
+// }
 
-void AlfvenCascade::calcCellParameters(spatial_cell::SpatialCell* cell, creal& t) {}
+// void AlfvenCascade::calcCellParameters(spatial_cell::SpatialCell* cell, creal& t) {}
 
 Realf AlfvenCascade::fillPhaseSpace(spatial_cell::SpatialCell *cell,
                                        const uint popID,

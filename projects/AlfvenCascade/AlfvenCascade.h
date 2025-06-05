@@ -48,8 +48,8 @@ namespace projects {
       virtual Realf fillPhaseSpace(spatial_cell::SpatialCell *cell,
                                     const uint popID,
                                     const uint nRequested) const override;
-      virtual void calcCellParameters(spatial_cell::SpatialCell* cell, creal& t);
-      virtual std::vector<std::array<Real, 3>> getV0(creal x, creal y, creal z, const uint popID) const;
+      // virtual void calcCellParameters(spatial_cell::SpatialCell* cell, creal& t);
+      // virtual std::vector<std::array<Real, 3>> getV0(creal x, creal y, creal z, const uint popID) const;
       
 
       // Basic plasma parameters
