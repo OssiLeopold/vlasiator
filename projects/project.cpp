@@ -51,6 +51,7 @@
 #include "Template/Template.h"
 #include "test_fp/test_fp.h"
 #include "testHall/testHall.h"
+#include "Turbulence/Turbulence.h"
 #include "verificationLarmor/verificationLarmor.h"
 #include "../backgroundfield/backgroundfield.h"
 #include "../backgroundfield/constantfield.hpp"
@@ -99,6 +100,7 @@ namespace projects {
       projects::Template::addParameters();
       projects::test_fp::addParameters();
       projects::TestHall::addParameters();
+      projects::Turbulence::addParameters();
       projects::verificationLarmor::addParameters();
       projects::Shocktest::addParameters();
       projects::LossCone::addParameters();
@@ -725,6 +727,9 @@ Project* createProject() {
    }
    if(Parameters::projectName == "testHall") {
       rvalue = new projects::TestHall;
+   }
+   if(Parameters::projectName == "Turbulence") {
+      rvalue = new projects::Turbulence;
    }
    if(Parameters::projectName == "verificationLarmor") {
       rvalue = new projects::verificationLarmor;
