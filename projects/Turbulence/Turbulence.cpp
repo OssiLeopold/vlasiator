@@ -175,15 +175,25 @@ Realf Turbulence::fillPhaseSpace(spatial_cell::SpatialCell *cell,
       for (int idx = 0; idx < nWaves; idx++) {
          Real cosalpha = cos(angle);
          Real sinalpha = sin(angle);
-         Real kwave = 2 * M_PI / wavelength.at(idx);
-         Real xpar = x * cosalpha + y * sinalpha;
+         Real kwave_mag = 2 * M_PI / wavelength.at(idx);
+         Real kwave_x = kwave_mag * cos(M_PI / 4);
+         Real kwave_y = kwave_mag * sin(M_PI / 4);
+
+         Real uperp = amplitude.at(idx) * cos(kwave_x * x + kwave_y * y + phase.at(idx));
+         Real upara = 0;
          
-         Real uperp = amplitude.at(idx) * sin(kwave * xpar + phase.at(idx));
+         Real ux = uperp;
+         Real uy = 0;
+         Real uz = upara;
+
+         //Real xpar = x * cosalpha + y * sinalpha;
+
+         /* Real uperp = amplitude.at(idx) * sin(kwave * xpar + phase.at(idx));
          Real upara = amplitude.at(idx) * cos(kwave * xpar + phase.at(idx));
          
          ux += -uperp * sinalpha;
          uy += uperp * cosalpha;
-         uz += upara;
+         uz += upara; */
       }
       creal initV0X = ux;
       creal initV0Y = uy;
@@ -235,7 +245,7 @@ void Turbulence::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFI
                                     FsGrid<fsgrids::technical, FS_STENCIL_WIDTH>& technicalGrid) {
    // Set background field
    ConstantField bgField;
-   bgField.initialize(B*cos(angle), B*sin(angle), 0.0); // Background field according to angle
+   bgField.initialize(0.0, 0.0, B); // Background field according to angle
    setBackgroundField(bgField, BgBGrid);
 
    if (!P::isRestart) {
@@ -256,18 +266,28 @@ void Turbulence::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFI
                for (int idx = 0; idx < nWaves; idx++) {
                    Real cosalpha = cos(angle);
                    Real sinalpha = sin(angle);
-                   Real kwave = 2 * M_PI / wavelength.at(idx);
-                   Real xpar = x[0] * cosalpha + x[1] * sinalpha;
+                   Real kwave_mag = 2 * M_PI / wavelength.at(idx);
+                   Real kwave_x = kwave_mag * cos(M_PI / 4);
+                   Real kwave_y = kwave_mag * sin(M_PI / 4);
+                   
+                   //Real xpar = x[0] * cosalpha + x[1] * sinalpha;
 
                    // Calculate B1 from v1 using Alfvén wave relation
                    Real B1 = std::pow(-1.0,idx) * amplitude.at(idx) * sqrt(mu0 * rho0);
+                  
+                   Real Bperp = B1 * cos(kwave_x * x[0] + kwave_y * x[1] + phase.at(idx));
+                   Real Bpara = 0;
 
-                   Real Bperp = B1 * sin(kwave * xpar + phase.at(idx));
+                   Bx += Bperp;
+                   By += 0;
+                   Bz += Bpara;
+
+                  /*  Real Bperp = B1 * sin(kwave * xpar + phase.at(idx));
                    Real Bpara = B1 * cos(kwave * xpar + phase.at(idx));
                    
                    Bx += -Bperp * sinalpha;
                    By += Bperp * cosalpha;
-                   Bz += Bpara;
+                   Bz += Bpara; */
                }
 
                cell->at(fsgrids::bfield::PERBX) = Bx;
