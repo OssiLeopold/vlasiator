@@ -32,15 +32,15 @@
 #include "../../object_wrapper.h"
 #include "../../readparameters.h"
 
-#include "AlfvenCascade.h"
+#include "Turbulence.h"
 
 using namespace spatial_cell;
 
 namespace projects {
-AlfvenCascade::AlfvenCascade() : Project() {}
-AlfvenCascade::~AlfvenCascade() {}
+Turbulence::Turbulence() : Project() {}
+Turbulence::~Turbulence() {}
 
-bool AlfvenCascade::initialize(void) {
+bool Turbulence::initialize(void) {
    bool success = Project::initialize();
 
    creal m = physicalconstants::MASS_PROTON;
@@ -88,64 +88,64 @@ bool AlfvenCascade::initialize(void) {
    return success;
 }
 
-void AlfvenCascade::addParameters() {
+void Turbulence::addParameters() {
    typedef Readparameters RP;
    
-   RP::add("AlfvenCascade.numberOfWaves", "Number of waves in the simulation", 1);
+   RP::add("Turbulence.numberOfWaves", "Number of waves in the simulation", 1);
 
-   RP::addComposing("AlfvenCascade.wavelength", "Wavelength of wave (m)");
-   RP::addComposing("AlfvenCascade.amplitude", "Velocity amplitude (m/s)");
-   RP::addComposing("AlfvenCascade.phase", "Initial phase (rad)");
+   RP::addComposing("Turbulence.wavelength", "Wavelength of wave (m)");
+   RP::addComposing("Turbulence.amplitude", "Velocity amplitude (m/s)");
+   RP::addComposing("Turbulence.phase", "Initial phase (rad)");
    
    
-   RP::add("AlfvenCascade.n0", "Background density (1/m^3)", 1e6);
-   RP::add("AlfvenCascade.B", "Background magnetic field strength (T)", 1e-8);
-   RP::add("AlfvenCascade.T", "Temperature (K)", 1e6);
-   RP::add("AlfvenCascade.spectralIndex", "Power law index for initial spectrum", -5.0/3.0);
-   RP::add("AlfvenCascade.randomSeed", "Seed for random phase generation", 12345);
-   RP::add("AlfvenCascade.verbose", "Verbose output", 1);
-   RP::add("AlfvenCascade.angle", "Wave angle (rad)",0.0);
+   RP::add("Turbulence.n0", "Background density (1/m^3)", 1e6);
+   RP::add("Turbulence.B", "Background magnetic field strength (T)", 1e-8);
+   RP::add("Turbulence.T", "Temperature (K)", 1e6);
+   RP::add("Turbulence.spectralIndex", "Power law index for initial spectrum", -5.0/3.0);
+   RP::add("Turbulence.randomSeed", "Seed for random phase generation", 12345);
+   RP::add("Turbulence.verbose", "Verbose output", 1);
+   RP::add("Turbulence.angle", "Wave angle (rad)",0.0);
 }
 
-void AlfvenCascade::getParameters() {
+void Turbulence::getParameters() {
    typedef Readparameters RP;
    Project::getParameters();
 
-   RP::get("AlfvenCascade.numberOfWaves", nWaves);
+   RP::get("Turbulence.numberOfWaves", nWaves);
 
-   RP::get("AlfvenCascade.wavelength", wavelength);
-   RP::get("AlfvenCascade.amplitude", amplitude);
-   RP::get("AlfvenCascade.phase", phase);
+   RP::get("Turbulence.wavelength", wavelength);
+   RP::get("Turbulence.amplitude", amplitude);
+   RP::get("Turbulence.phase", phase);
 
    // We need the correct number of parameters for the waves
    if(   nWaves != (int)wavelength.size()
       || nWaves != (int)amplitude.size()
       || nWaves != (int)phase.size()
    ) {
-      cerr << "AlfvenCascade.numberOfWaves is set to " << nWaves << " so the same number of values is required for AlfvenCascade.wavelength, AlfvenCascade.amplitude, AlfvenCascade.phase" << endl;
+      cerr << "Turbulence.numberOfWaves is set to " << nWaves << " so the same number of values is required for Turbulence.wavelength, Turbulence.amplitude, Turbulence.phase" << endl;
       MPI_Abort(MPI_COMM_WORLD, 1);
    }
 
    // Get scalar parameters
-   RP::get("AlfvenCascade.n0", n0);
-   RP::get("AlfvenCascade.B", B);
-   RP::get("AlfvenCascade.T", T);
-   RP::get("AlfvenCascade.spectralIndex", spectralIndex);
-   RP::get("AlfvenCascade.randomSeed", randomSeed);
-   RP::get("AlfvenCascade.verbose", verbose);
-   RP::get("AlfvenCascade.angle", angle);
+   RP::get("Turbulence.n0", n0);
+   RP::get("Turbulence.B", B);
+   RP::get("Turbulence.T", T);
+   RP::get("Turbulence.spectralIndex", spectralIndex);
+   RP::get("Turbulence.randomSeed", randomSeed);
+   RP::get("Turbulence.verbose", verbose);
+   RP::get("Turbulence.angle", angle);
 }
 
-// std::vector<std::array<Real, 3>> AlfvenCascade::getV0(creal x, creal y, creal z, const uint popID) const {
+// std::vector<std::array<Real, 3>> Turbulence::getV0(creal x, creal y, creal z, const uint popID) const {
 //    std::vector<std::array<Real, 3>> V0;
 //    std::array<Real, 3> v = {{0.0, 0.0, 0.0}};
 //    V0.push_back(v);
 //    return V0;
 // }
 
-void AlfvenCascade::calcCellParameters(spatial_cell::SpatialCell* cell, creal& t) {}
+void Turbulence::calcCellParameters(spatial_cell::SpatialCell* cell, creal& t) {}
 
-Realf AlfvenCascade::fillPhaseSpace(spatial_cell::SpatialCell *cell,
+Realf Turbulence::fillPhaseSpace(spatial_cell::SpatialCell *cell,
                                        const uint popID,
                                        const uint nRequested
       ) const {
@@ -230,7 +230,7 @@ Realf AlfvenCascade::fillPhaseSpace(spatial_cell::SpatialCell *cell,
       return rhosum;
    }
 
-void AlfvenCascade::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFIELD>, FS_STENCIL_WIDTH>& perBGrid,
+void Turbulence::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFIELD>, FS_STENCIL_WIDTH>& perBGrid,
                                     FsGrid<std::array<Real, fsgrids::bgbfield::N_BGB>, FS_STENCIL_WIDTH>& BgBGrid,
                                     FsGrid<fsgrids::technical, FS_STENCIL_WIDTH>& technicalGrid) {
    // Set background field

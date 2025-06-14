@@ -31,7 +31,7 @@
 #include "../velocity_mesh_parameters.h"
 
 #include "Alfven/Alfven.h"
-#include "AlfvenCascade/AlfvenCascade.h"
+//#include "AlfvenCascade/AlfvenCascade.h"
 //#include "CircularAlfven/CircularAlfven.h"
 //#include "MultiCircularAlfven/MultiCircularAlfven.h"
 #include "Diffusion/Diffusion.h"
@@ -80,7 +80,7 @@ namespace projects {
       typedef Readparameters RP;
       // TODO add all projects' static addParameters() functions here.
       projects::Alfven::addParameters();
-      projects::AlfvenCascade::addParameters();
+      // projects::AlfvenCascade::addParameters();
       // projects::CircularAlfven::addParameters();
       // projects::MultiCircularAlfven::addParameters();
       projects::Diffusion::addParameters();
@@ -673,9 +673,6 @@ Project* createProject() {
    }
    if(Parameters::projectName == "Alfven") {
       rvalue = new projects::Alfven;
-   }
-   if(Parameters::projectName == "AlfvenCascade") {
-      rvalue = new projects::AlfvenCascade;
    }
    if(Parameters::projectName == "Diffusion") {
       rvalue = new projects::Diffusion;
