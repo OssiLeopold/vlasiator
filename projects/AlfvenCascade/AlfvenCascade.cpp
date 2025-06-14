@@ -143,7 +143,7 @@ void AlfvenCascade::getParameters() {
 //    return V0;
 // }
 
-// void AlfvenCascade::calcCellParameters(spatial_cell::SpatialCell* cell, creal& t) {}
+void AlfvenCascade::calcCellParameters(spatial_cell::SpatialCell* cell, creal& t) {}
 
 Realf AlfvenCascade::fillPhaseSpace(spatial_cell::SpatialCell *cell,
                                        const uint popID,
