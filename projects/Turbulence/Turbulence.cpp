@@ -171,13 +171,14 @@ Realf Turbulence::fillPhaseSpace(spatial_cell::SpatialCell *cell,
       creal mass = physicalconstants::MASS_PROTON;
       creal mu0 = physicalconstants::MU_0;
       Real ux = 0.0, uy = 0.0, uz = 0.0;
+      std::array<Real, 5> k_angle {0, 0.79, 1.57, 2.36, 3.93};
 
       for (int idx = 0; idx < nWaves; idx++) {
          Real cosalpha = cos(angle);
          Real sinalpha = sin(angle);
          Real kwave_mag = 2 * M_PI / wavelength.at(idx);
-         Real kwave_x = kwave_mag * cos(M_PI/4);
-         Real kwave_y = kwave_mag * sin(M_PI/4);
+         Real kwave_x = kwave_mag * cos(k_angle.at(idx));
+         Real kwave_y = kwave_mag * sin(k_angle.at(idx));
 
          //Real uperp = amplitude.at(idx) * cos(kwave_x * x + kwave_y * y + phase.at(idx));
          //Real upara = 0;
@@ -261,14 +262,15 @@ void Turbulence::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFI
                std::array<Real, fsgrids::bfield::N_BFIELD>* cell = perBGrid.get(i, j, k);
 
                Real Bx = 0.0, By = 0.0, Bz = 0.0;
+               std::array<Real, 5> k_angle {0, 0.79, 1.57, 2.36, 3.93};
 
                // Sum contributions from all waves
                for (int idx = 0; idx < nWaves; idx++) {
                    Real cosalpha = cos(angle);
                    Real sinalpha = sin(angle);
                    Real kwave_mag = 2 * M_PI / wavelength.at(idx);
-                   Real kwave_x = kwave_mag;
-                   Real kwave_y = kwave_mag;
+                   Real kwave_x = kwave_mag * cos(k_angle.at(idx));
+                   Real kwave_y = kwave_mag * sin(k_angle.at(idx));
                    
                    //Real xpar = x[0] * cosalpha + x[1] * sinalpha;
 
