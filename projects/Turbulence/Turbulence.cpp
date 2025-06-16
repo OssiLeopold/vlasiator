@@ -184,7 +184,7 @@ Realf Turbulence::fillPhaseSpace(spatial_cell::SpatialCell *cell,
          //Real upara = 0;
          
          ux += - amplitude.at(idx) * kwave_y * cos(kwave_x * x + kwave_y * y + phase.at(idx));
-         uy += amplitude.at(idx) * kwave_x * cos(kwave_x * x + kwave_y * y + phase.at(idx));
+         uy += amplitude.at(idx) * kwave_x * sin(kwave_x * x + kwave_y * y + phase.at(idx));
          uz += 0;
 
          //Real xpar = x * cosalpha + y * sinalpha;
@@ -281,7 +281,7 @@ void Turbulence::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFI
                    //Real Bpara = 0;
 
                    Bx += -B1 * kwave_y * cos(kwave_x * x[0] + kwave_y * x[1] + phase.at(idx));
-                   By += B1 * kwave_x * cos(kwave_x * x[0] + kwave_y * x[1] + phase.at(idx));
+                   By += B1 * kwave_x * sin(kwave_x * x[0] + kwave_y * x[1] + phase.at(idx));
                    Bz += 0;
 
                   /*  Real Bperp = B1 * sin(kwave * xpar + phase.at(idx));
