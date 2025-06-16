@@ -183,8 +183,8 @@ Realf Turbulence::fillPhaseSpace(spatial_cell::SpatialCell *cell,
          //Real uperp = amplitude.at(idx) * cos(kwave_x * x + kwave_y * y + phase.at(idx));
          //Real upara = 0;
          
-         ux += - amplitude.at(idx) * kwave_y * cos(kwave_x * x[0] + kwave_y * x[1] + phase.at(idx));
-         uy += amplitude.at(idx) * kwave_x * cos(kwave_x * x[0] + kwave_y * x[1] + phase.at(idx));
+         ux += - amplitude.at(idx) * kwave_y * cos(kwave_x * x + kwave_y * y + phase.at(idx));
+         uy += amplitude.at(idx) * kwave_x * cos(kwave_x * x + kwave_y * y + phase.at(idx));
          uz += 0;
 
          //Real xpar = x * cosalpha + y * sinalpha;
