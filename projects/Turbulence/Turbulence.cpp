@@ -176,15 +176,15 @@ Realf Turbulence::fillPhaseSpace(spatial_cell::SpatialCell *cell,
          Real cosalpha = cos(angle);
          Real sinalpha = sin(angle);
          Real kwave_mag = 2 * M_PI / wavelength.at(idx);
-         Real kwave_x = kwave_mag * cos(M_PI/4);
-         Real kwave_y = (M_PI/4 - kwave_x*x - phase.at(idx)) / y;
+         Real kwave_x = kwave_mag;
+         Real kwave_y = kwave_mag;
 
-         //Real uperp = amplitude.at(idx) * cos(kwave_x * x + kwave_y * y + phase.at(idx));
-         //Real upara = 0;
+         Real uperp = amplitude.at(idx) * cos(kwave_x * x + kwave_y * y + phase.at(idx));
+         Real upara = 0;
          
-         ux += amplitude.at(idx) * cos(kwave_x * x + kwave_y * y + phase.at(idx));
-         uy += amplitude.at(idx) * sin(kwave_x * x + kwave_y * y + phase.at(idx));
-         uz += 0;
+         ux += uperp;
+         uy += -(kwave_x/kwave_y) * uperp;
+         uz += upara;
 
          //Real xpar = x * cosalpha + y * sinalpha;
 
@@ -275,12 +275,12 @@ void Turbulence::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFI
                    // Calculate B1 from v1 using Alfvén wave relation
                    Real B1 = std::pow(-1.0,idx) * amplitude.at(idx) * sqrt(mu0 * rho0);
                   
-                   //Real Bperp = B1 * cos(kwave_x * x[0] + kwave_y * x[1] + phase.at(idx));
-                   //Real Bpara = 0;
+                   Real Bperp = B1 * cos(kwave_x * x[0] + kwave_y * x[1] + phase.at(idx));
+                   Real Bpara = 0;
 
-                   Bx += B1 * cos(kwave_x * x[0] + kwave_y * x[1] + phase.at(idx));
-                   By += B1 * sin(kwave_x * x[0] + kwave_y * x[1] + phase.at(idx));
-                   Bz += 0;
+                   Bx += Bperp;
+                   By += -(kwave_x/kwave_y) * Bperp;
+                   Bz += Bpara;
 
                   /*  Real Bperp = B1 * sin(kwave * xpar + phase.at(idx));
                    Real Bpara = B1 * cos(kwave * xpar + phase.at(idx));
