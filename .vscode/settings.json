@@ -3,6 +3,8 @@
    "editor.tabSize": 3,
    "editor.detectIndentation": false,
    "files.associations": {
-      "*.ipp": "cpp"
+      "*.ipp": "cpp",
+      "cmath": "cpp",
+      "complex": "cpp"
    },
 }
