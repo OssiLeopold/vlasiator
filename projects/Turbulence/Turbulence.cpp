@@ -40,54 +40,6 @@ namespace projects {
 Turbulence::Turbulence() : Project() {}
 Turbulence::~Turbulence() {}
 
-bool Turbulence::initialize(void) {
-   bool success = Project::initialize();
-
-   creal m = physicalconstants::MASS_PROTON;
-   creal e = physicalconstants::CHARGE;
-   creal kB = physicalconstants::K_B;
-   creal gamma = 5.0 / 3.0;
-   creal mu0 = physicalconstants::MU_0;
-
-   rho0 = m * n0; // Mass density
-   p0 = n0 * kB * T; // pressure
-
-   std::vector<WaveParameters> waves;
-   // Initialize waves based on parameters
-   waves.clear();
-   for (int idx = 0; idx < nWaves; idx++) {
-       WaveParameters wave;
-       wave.wavelength = wavelength.at(idx);
-       wave.amplitude = amplitude.at(idx);
-       wave.phase = phase.at(idx);
-       waves.push_back(wave);
-   }
-
-   // Calculate Alfvén speed
-   VA = B / sqrt(mu0 * rho0);
-
-   if (verbose) {
-      int myRank;
-      MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
-      if (myRank == MASTER_RANK) {
-         std::cout << "Initialized multi-wave turbulence simulation\n";
-         std::cout << "Number of waves: " << nWaves << "\n";
-         std::cout << "Background field strength: " << B << " T\n";
-         std::cout << "Alfvén speed: " << VA << " m/s\n";
-         
-         for (int idx = 0; idx < nWaves; idx++) {
-             std::cout << "\nWave " << idx + 1 << ":\n";
-             std::cout << "Wavelength: " << wavelength.at(idx) << " m\n";
-             std::cout << "Amplitude: " << amplitude.at(idx) << " m/s\n";
-             std::cout << "Phase: " << phase.at(idx) << " rad\n";
-             std::cout << "Angle: " << angle * 180/M_PI << " degrees\n";
-         }
-      }
-   }
-
-   return success;
-}
-
 void Turbulence::addParameters() {
    typedef Readparameters RP;
    
@@ -136,12 +88,53 @@ void Turbulence::getParameters() {
    RP::get("Turbulence.angle", angle);
 }
 
-// std::vector<std::array<Real, 3>> Turbulence::getV0(creal x, creal y, creal z, const uint popID) const {
-//    std::vector<std::array<Real, 3>> V0;
-//    std::array<Real, 3> v = {{0.0, 0.0, 0.0}};
-//    V0.push_back(v);
-//    return V0;
-// }
+bool Turbulence::initialize(void) {
+   bool success = Project::initialize();
+
+   creal m = physicalconstants::MASS_PROTON;
+   creal e = physicalconstants::CHARGE;
+   creal kB = physicalconstants::K_B;
+   creal gamma = 5.0 / 3.0;
+   creal mu0 = physicalconstants::MU_0;
+
+   rho0 = m * n0; // Mass density
+   p0 = n0 * kB * T; // pressure
+
+   std::vector<WaveParameters> waves;
+   // Initialize waves based on parameters
+   waves.clear();
+   for (int idx = 0; idx < nWaves; idx++) {
+       WaveParameters wave;
+       wave.wavelength = wavelength.at(idx);
+       wave.amplitude = amplitude.at(idx);
+       wave.phase = phase.at(idx);
+       waves.push_back(wave);
+   }
+
+   // Calculate Alfvén speed
+   VA = B / sqrt(mu0 * rho0);
+
+   if (verbose) {
+      int myRank;
+      MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
+      if (myRank == MASTER_RANK) {
+         std::cout << "Initialized multi-wave turbulence simulation\n";
+         std::cout << "Number of waves: " << nWaves << "\n";
+         std::cout << "Background field strength: " << B << " T\n";
+         std::cout << "Alfvén speed: " << VA << " m/s\n";
+         
+         for (int idx = 0; idx < nWaves; idx++) {
+             std::cout << "\nWave " << idx + 1 << ":\n";
+             std::cout << "Wavelength: " << wavelength.at(idx) << " m\n";
+             std::cout << "Amplitude: " << amplitude.at(idx) << " m/s\n";
+             std::cout << "Phase: " << phase.at(idx) << " rad\n";
+             std::cout << "Angle: " << angle * 180/M_PI << " degrees\n";
+         }
+      }
+   }
+
+   return success;
+}
 
 void Turbulence::calcCellParameters(spatial_cell::SpatialCell* cell, creal& t) {}
 
@@ -154,19 +147,6 @@ Realf Turbulence::fillPhaseSpace(spatial_cell::SpatialCell *cell,
       // Fetch spatial cell center coordinates
       const Real x  = cell->parameters[CellParams::XCRD] + 0.5*cell->parameters[CellParams::DX];
       const Real y  = cell->parameters[CellParams::YCRD] + 0.5*cell->parameters[CellParams::DY];
-      // const Real z  = cell->parameters[CellParams::ZCRD] + 0.5*cell->parameters[CellParams::DZ];
-
-      // creal mass = getObjectWrapper().particleSpecies[popID].mass;
-      // creal mu0 = physicalconstants::MU_0;
-      // creal ALFVEN_VEL = this->B0 / sqrt(mu0 * sP.rho * mass);
-
-      // creal ksi = (x * cos(this->ALPHA) + y * sin(this->ALPHA)) / this->WAVELENGTH;
-      // creal initV0X = sP.A_VEL * ALFVEN_VEL * sin(this->ALPHA) * sin(2.0 * M_PI * ksi);
-      // creal initV0Y = - sP.A_VEL * ALFVEN_VEL * cos(this->ALPHA) * sin(2.0 * M_PI * ksi);
-      // creal initV0Z = - sP.A_VEL * ALFVEN_VEL * cos(2.0 * M_PI * ksi);
-
-      // Real initRho = sP.rho;
-      // Real initT = sP.T;
 
       creal mass = physicalconstants::MASS_PROTON;
       creal mu0 = physicalconstants::MU_0;
@@ -185,8 +165,6 @@ Realf Turbulence::fillPhaseSpace(spatial_cell::SpatialCell *cell,
 
       Real initRho = n0;
       Real initT = T;
-
-      // std::cout << "initV0X " << initV0X << " initV0Y " << initV0Y << " initV0Z " << initV0Z << " initT " << initT << " initRho " << initRho << " mass " << mass << std::endl;
 
       #ifdef USE_GPU
       vmesh::VelocityMesh *vmesh = cell->dev_get_velocity_mesh(popID);
