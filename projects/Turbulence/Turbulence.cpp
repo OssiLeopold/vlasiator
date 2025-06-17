@@ -100,9 +100,8 @@ bool Turbulence::initialize(void) {
    rho0 = m * n0; // Mass density
    p0 = n0 * kB * T; // pressure
 
-   std::vector<WaveParameters> waves;
+   std::vector<WaveParameters> waves {};
    // Initialize waves based on parameters
-   waves.clear();
    for (int idx = 0; idx < nWaves; idx++) {
        WaveParameters wave;
        wave.wavelength = wavelength.at(idx);
@@ -132,7 +131,6 @@ bool Turbulence::initialize(void) {
          }
       }
    }
-
    return success;
 }
 
@@ -151,12 +149,16 @@ Realf Turbulence::fillPhaseSpace(spatial_cell::SpatialCell *cell,
       creal mass = physicalconstants::MASS_PROTON;
       creal mu0 = physicalconstants::MU_0;
       Real ux = 0.0, uy = 0.0, uz = 0.0;
+      std::array<Real,4> kx {1,-1,-1,1};
+      std::array<Real,4> ky {1,1,-1,-1};
 
       for (int idx = 0; idx < nWaves; idx++) {
          Real kwave = 2 * M_PI / wavelength.at(idx);
+         Real kwave_x = kwave * kx.at(idx);
+         Real kwave_y = kwave * ky.at(idx);
          
-         ux += amplitude.at(idx) * cos(kwave * x + kwave * y + phase.at(idx));
-         uy += - amplitude.at(idx) * cos(kwave * x + kwave * y + phase.at(idx));
+         ux += amplitude.at(idx) * cos(kwave_x * x + kwave_y * y + phase.at(idx));
+         uy += - kwave_x / kwave_y * amplitude.at(idx) * cos(kwave_x * x + kwave_y * y + phase.at(idx));
          uz += 0;
       }
       creal initV0X = ux;
@@ -223,14 +225,18 @@ void Turbulence::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFI
                std::array<Real, fsgrids::bfield::N_BFIELD>* cell = perBGrid.get(i, j, k);
 
                Real Bx = 0.0, By = 0.0, Bz = 0.0;
+               std::array<Real,4> kx {1,-1,-1,1};
+               std::array<Real,4> ky {1,1,-1,-1};
 
                // Sum contributions from all waves
                for (int idx = 0; idx < nWaves; idx++) {
                    Real kwave = 2 * M_PI / wavelength.at(idx);
+                   Real kwave_x = kwave * kx.at(idx);
+                   Real kwave_y = kwave * ky.at(idx);
                    Real B1 = std::pow(-1.0,idx) * amplitude.at(idx) * sqrt(mu0 * rho0);
 
-                   Bx += B1 * cos(kwave * x[0] + kwave * x[1] + phase.at(idx));
-                   By += -B1 * cos(kwave * x[0] + kwave * x[1] + phase.at(idx));
+                   Bx += B1 * cos(kwave_x * x[0] + kwave_y * x[1] + phase.at(idx));
+                   By += - kwave_x / kwave_y * B1 * cos(kwave_x * x[0] + kwave_y * x[1] + phase.at(idx));
                    Bz += 0;
                }
 
