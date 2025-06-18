@@ -225,10 +225,10 @@ void Turbulence::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFI
                // Sum contributions from all waves
                for (int idx = 0; idx < nWaves; idx++) {
                    Real kwave = 2 * M_PI / wavelength.at(idx);
-                   std::cout << j << "\n";
+                   
                    Real B1 {};
                    if (j < 50){
-                     B1 = amplitude.at(idx) * sqrt(mu0 * rho0);
+                     B1 = B;
                    }
                    else{
                      B1 = -amplitude.at(idx) * sqrt(mu0 * rho0);
