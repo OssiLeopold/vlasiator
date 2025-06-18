@@ -215,7 +215,7 @@ void Turbulence::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFI
 
 #pragma omp parallel for collapse(3)
       for (int i = 0; i < localSize[0]; ++i) {
-         for (int j = 0; j < localSize[1] / 2; ++j) {
+         for (int j = 0; j < localSize[1]; ++j) {
             for (int k = 0; k < localSize[2]; ++k) {
                const std::array<Real, 3> x = perBGrid.getPhysicalCoords(i, j, k);
                std::array<Real, fsgrids::bfield::N_BFIELD>* cell = perBGrid.get(i, j, k);
@@ -225,35 +225,18 @@ void Turbulence::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFI
                // Sum contributions from all waves
                for (int idx = 0; idx < nWaves; idx++) {
                    Real kwave = 2 * M_PI / wavelength.at(idx);
-
-                   Real B1 = amplitude.at(idx) * sqrt(mu0 * rho0);
+                   
+                   Real B1 {};
+                   if (j < 50){
+                     B1 = amplitude.at(idx) * sqrt(mu0 * rho0);
+                   }
+                   else{
+                     B1 = -amplitude.at(idx) * sqrt(mu0 * rho0);
+                   }
 
                    Bx += 0;
                    By += B1 * sin(kwave * x[0] + phase.at(idx));
                    Bz += B1 * cos(kwave * x[0] + phase.at(idx));
-               }
-
-               cell->at(fsgrids::bfield::PERBX) = Bx;
-               cell->at(fsgrids::bfield::PERBY) = By;
-               cell->at(fsgrids::bfield::PERBZ) = Bz;
-            }
-         }
-         for (int j = localSize[1] / 2; j < localSize[1]; ++j) {
-            for (int k = 0; k < localSize[2]; ++k) {
-               const std::array<Real, 3> x = perBGrid.getPhysicalCoords(i, j, k);
-               std::array<Real, fsgrids::bfield::N_BFIELD>* cell = perBGrid.get(i, j, k);
-
-               Real Bx = 0.0, By = 0.0, Bz = 0.0;
-
-               // Sum contributions from all waves
-               for (int idx = 0; idx < nWaves; idx++) {
-                   Real kwave = 2 * M_PI / wavelength.at(idx);
-
-                   Real B1 = amplitude.at(idx) * sqrt(mu0 * rho0);
-
-                   Bx += 0;
-                   By += -B1 * sin(kwave * x[0] + phase.at(idx));
-                   Bz += -B1 * cos(kwave * x[0] + phase.at(idx));
                }
 
                cell->at(fsgrids::bfield::PERBX) = Bx;
