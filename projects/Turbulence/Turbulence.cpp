@@ -149,17 +149,13 @@ Realf Turbulence::fillPhaseSpace(spatial_cell::SpatialCell *cell,
       creal mass = physicalconstants::MASS_PROTON;
       creal mu0 = physicalconstants::MU_0;
       Real ux = 0.0, uy = 0.0, uz = 0.0;
-      std::array<Real,4> kx {1,-1,-1,1};
-      std::array<Real,4> ky {1,1,-1,-1};
 
       for (int idx = 0; idx < nWaves; idx++) {
          Real kwave = 2 * M_PI / wavelength.at(idx);
-         Real kwave_x = kwave * kx.at(idx);
-         Real kwave_y = kwave * ky.at(idx);
          
-         ux += amplitude.at(idx) * cos(kwave_x * x + kwave_y * y + phase.at(idx));
-         uy += - kwave_x / kwave_y * amplitude.at(idx) * cos(kwave_x * x + kwave_y * y + phase.at(idx));
-         uz += 0;
+         ux += 0;
+         uy += amplitude.at(idx) * sin(kwave * x + phase.at(idx));
+         uz += amplitude.at(idx) * cos(kwave * x + phase.at(idx));
       }
       creal initV0X = ux;
       creal initV0Y = uy;
@@ -209,7 +205,7 @@ void Turbulence::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFI
                                     FsGrid<fsgrids::technical, FS_STENCIL_WIDTH>& technicalGrid) {
    // Set background field
    ConstantField bgField;
-   bgField.initialize(0.0, 0.0, B); // Background field according to angle
+   bgField.initialize(B, 0.0, 0.0); // Background field according to angle
    setBackgroundField(bgField, BgBGrid);
 
    if (!P::isRestart) {
@@ -219,25 +215,45 @@ void Turbulence::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFI
 
 #pragma omp parallel for collapse(3)
       for (int i = 0; i < localSize[0]; ++i) {
-         for (int j = 0; j < localSize[1]; ++j) {
+         for (int j = 0; j < localSize[1] / 2; ++j) {
             for (int k = 0; k < localSize[2]; ++k) {
                const std::array<Real, 3> x = perBGrid.getPhysicalCoords(i, j, k);
                std::array<Real, fsgrids::bfield::N_BFIELD>* cell = perBGrid.get(i, j, k);
 
                Real Bx = 0.0, By = 0.0, Bz = 0.0;
-               std::array<Real,4> kx {1,-1,-1,1};
-               std::array<Real,4> ky {1,1,-1,-1};
 
                // Sum contributions from all waves
                for (int idx = 0; idx < nWaves; idx++) {
                    Real kwave = 2 * M_PI / wavelength.at(idx);
-                   Real kwave_x = kwave * kx.at(idx);
-                   Real kwave_y = kwave * ky.at(idx);
-                   Real B1 = std::pow(-1.0,idx) * amplitude.at(idx) * sqrt(mu0 * rho0);
 
-                   Bx += B1 * cos(kwave_x * x[0] + kwave_y * x[1] + phase.at(idx));
-                   By += - kwave_x / kwave_y * B1 * cos(kwave_x * x[0] + kwave_y * x[1] + phase.at(idx));
-                   Bz += 0;
+                   Real B1 = amplitude.at(idx) * sqrt(mu0 * rho0);
+
+                   Bx += 0;
+                   By += B1 * sin(kwave * x[0] + phase.at(idx));
+                   Bz += B1 * cos(kwave * x[0] + phase.at(idx));
+               }
+
+               cell->at(fsgrids::bfield::PERBX) = Bx;
+               cell->at(fsgrids::bfield::PERBY) = By;
+               cell->at(fsgrids::bfield::PERBZ) = Bz;
+            }
+         }
+         for (int j = localSize[1] / 2; j < localSize[1]; ++j) {
+            for (int k = 0; k < localSize[2]; ++k) {
+               const std::array<Real, 3> x = perBGrid.getPhysicalCoords(i, j, k);
+               std::array<Real, fsgrids::bfield::N_BFIELD>* cell = perBGrid.get(i, j, k);
+
+               Real Bx = 0.0, By = 0.0, Bz = 0.0;
+
+               // Sum contributions from all waves
+               for (int idx = 0; idx < nWaves; idx++) {
+                   Real kwave = 2 * M_PI / wavelength.at(idx);
+
+                   Real B1 = amplitude.at(idx) * sqrt(mu0 * rho0);
+
+                   Bx += 0;
+                   By += -B1 * sin(kwave * x[0] + phase.at(idx));
+                   Bz += -B1 * cos(kwave * x[0] + phase.at(idx));
                }
 
                cell->at(fsgrids::bfield::PERBX) = Bx;
