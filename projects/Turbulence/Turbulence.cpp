@@ -227,8 +227,8 @@ void Turbulence::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFI
                    Real kwave = 2 * M_PI / wavelength.at(idx);
                    
                    Real B1 {};
-                   if (j < 50){
-                     B1 = B;
+                   if (x[1] < 1500000){
+                     B1 = amplitude.at(idx) * sqrt(mu0 * rho0);
                    }
                    else{
                      B1 = -amplitude.at(idx) * sqrt(mu0 * rho0);
