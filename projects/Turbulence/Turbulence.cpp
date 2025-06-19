@@ -226,17 +226,11 @@ void Turbulence::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFI
                for (int idx = 0; idx < nWaves; idx++) {
                    Real kwave = 2 * M_PI / wavelength.at(idx);
                    
-                   Real B1 {};
-                   if (x[1] < 15000000){
-                     B1 = amplitude.at(idx) * sqrt(mu0 * rho0);
-                   }
-                   else{
-                     B1 = -amplitude.at(idx) * sqrt(mu0 * rho0);
-                   }
+                   Real B1 {amplitude.at(idx) * sqrt(mu0 * rho0)};
 
                    Bx += 0;
-                   By += B1 * sin(kwave * x[0] + phase.at(idx));
-                   Bz += B1 * cos(kwave * x[0] + phase.at(idx));
+                   By += B1 * sin(kwave * x[0] + phase.at(idx)) * sin(2 * M_PI / 30000000 * x[1]);
+                   Bz += B1 * cos(kwave * x[0] + phase.at(idx)) * sin(2 * M_PI / 30000000 * x[1]);
                }
 
                cell->at(fsgrids::bfield::PERBX) = Bx;
