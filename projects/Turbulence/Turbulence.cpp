@@ -225,8 +225,8 @@ void Turbulence::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFI
                std::array<Real, fsgrids::bfield::N_BFIELD>* cell = perBGrid.get(i, j, k);
 
                Real Bx = 0.0, By = 0.0, Bz = 0.0;
-               std::array<Real,4> kx {1,-1,-1,1};
-               std::array<Real,4> ky {1,1,-1,-1};
+               std::array<Real,4> kx {1,-1,-1,1,0,-1,0,1};
+               std::array<Real,4> ky {1,1,-1,-1,1,0,-1,0};
 
                // Sum contributions from all waves
                for (int idx = 0; idx < nWaves; idx++) {
