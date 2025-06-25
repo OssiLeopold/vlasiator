@@ -149,8 +149,8 @@ Realf Turbulence::fillPhaseSpace(spatial_cell::SpatialCell *cell,
       creal mass = physicalconstants::MASS_PROTON;
       creal mu0 = physicalconstants::MU_0;
       Real ux = 0.0, uy = 0.0, uz = 0.0;
-      std::array<Real,4> kx {1,-1,-1,1};
-      std::array<Real,4> ky {1,1,-1,-1};
+      std::array<Real,8> kx {1,-1,-1,1,0,-1,0,1};
+      std::array<Real,8> ky {1,1,-1,-1,1,0,-1,0};
 
       for (int idx = 0; idx < nWaves; idx++) {
          Real kwave = 2 * M_PI / wavelength.at(idx);
