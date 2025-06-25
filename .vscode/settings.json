@@ -5,6 +5,7 @@
    "files.associations": {
       "*.ipp": "cpp",
       "cmath": "cpp",
-      "complex": "cpp"
+      "complex": "cpp",
+      "array": "cpp"
    },
 }
