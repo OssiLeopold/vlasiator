@@ -149,8 +149,8 @@ Realf Turbulence::fillPhaseSpace(spatial_cell::SpatialCell *cell,
       creal mass = physicalconstants::MASS_PROTON;
       creal mu0 = physicalconstants::MU_0;
       Real ux = 0.0, uy = 0.0, uz = 0.0;
-      std::array<Real,8> kx {2,1,-1,-2,-2,-1,1,2};
-      std::array<Real,8> ky {1,2,2,1,-1,-2,-2,-1};
+      std::array<Real,8> kx {2,1,-1,-2,-2,-1,1,2} / 2;
+      std::array<Real,8> ky {1,2,2,1,-1,-2,-2,-1} / 2;
       //std::array<Real,4> kx {1,-1,-1,1};
       //std::array<Real,4> ky {1,1,-1,-1};
 
@@ -235,8 +235,8 @@ void Turbulence::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFI
                // Sum contributions from all waves
                for (int idx = 0; idx < nWaves; idx++) {
                    Real kwave = 2 * M_PI / wavelength.at(idx);
-                   Real kwave_x = kwave * kx.at(idx);
-                   Real kwave_y = kwave * ky.at(idx);
+                   Real kwave_x = kwave * kx.at(idx) / 2;
+                   Real kwave_y = kwave * ky.at(idx) / 2;
                    Real B1 = std::pow(-1.0,idx) * amplitude.at(idx) * sqrt(mu0 * rho0);
 
                    Bx += B1 * cos(kwave_x * x[0] + kwave_y * x[1] + phase.at(idx));
