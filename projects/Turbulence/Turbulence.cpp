@@ -149,10 +149,10 @@ Realf Turbulence::fillPhaseSpace(spatial_cell::SpatialCell *cell,
       creal mass = physicalconstants::MASS_PROTON;
       creal mu0 = physicalconstants::MU_0;
       Real ux = 0.0, uy = 0.0, uz = 0.0;
-      //std::array<Real,8> kx {2,1,-1,-2,-2,-1,1,2};
-      //std::array<Real,8> ky {1,2,2,1,-1,-2,-2,-1};
-      std::array<Real,4> kx {1,-1,-1,1};
-      std::array<Real,4> ky {1,1,-1,-1};
+      std::array<Real,8> kx {2,1,-1,-2,-2,-1,1,2};
+      std::array<Real,8> ky {1,2,2,1,-1,-2,-2,-1};
+      //std::array<Real,4> kx {1,-1,-1,1};
+      //std::array<Real,4> ky {1,1,-1,-1};
 
       for (int idx = 0; idx < nWaves; idx++) {
          Real kwave = 2 * M_PI / wavelength.at(idx);
@@ -227,10 +227,10 @@ void Turbulence::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFI
                std::array<Real, fsgrids::bfield::N_BFIELD>* cell = perBGrid.get(i, j, k);
 
                Real Bx = 0.0, By = 0.0, Bz = 0.0;
-               //std::array<Real,8> kx {2,1,-1,-2,-2,-1,1,2};
-               //std::array<Real,8> ky {1,2,2,1,-1,-2,-2,-1};
-               std::array<Real,4> kx {1,-1,-1,1};
-               std::array<Real,4> ky {1,1,-1,-1};
+               std::array<Real,8> kx {2,1,-1,-2,-2,-1,1,2};
+               std::array<Real,8> ky {1,2,2,1,-1,-2,-2,-1};
+               //std::array<Real,4> kx {1,-1,-1,1};
+               //std::array<Real,4> ky {1,1,-1,-1};
 
                // Sum contributions from all waves
                for (int idx = 0; idx < nWaves; idx++) {
