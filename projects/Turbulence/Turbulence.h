@@ -64,6 +64,7 @@ namespace projects {
 
       // Turbulence parameters
       int nWaves;                    // Number of waves in simulation
+      int n_possible;                // Number of possible waves to choose from
       Real amplitude;                // Amplitude of all the waves
       std::vector<Real> kx;          // Vector for kx values
       std::vector<Real> ky;          // Vector for ky values
