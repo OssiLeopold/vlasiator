@@ -101,11 +101,11 @@ bool Turbulence::initialize(void) {
    p0 = n0 * kB * T; // pressure
 
    // Construct random phases
-   std::array<Real, nWaves> phase_rand {};
+   std::vector<Real> phase_rand {};
    std::mt19937 gen(randomSeed);
    std::uniform_real_distribution<> dis(0, 2.0 * M_PI);
    for (int n = 0; n < nWaves; n++){
-      phase_rand[n] = dis(gen);
+      phase_rand.push_back(dis(gen));
    }
     
    std::vector<WaveParameters> waves {};
