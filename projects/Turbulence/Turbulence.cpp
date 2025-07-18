@@ -124,7 +124,7 @@ bool Turbulence::initialize(void) {
       int index_y = random_index(gen);
 
       kx.push_back(2 * M_PI / allowed_wavelengths.at(index_x));
-      ky.push_back(2 * M_PI / allower_wavelengths.at(index_y));
+      ky.push_back(2 * M_PI / allowed_wavelengths.at(index_y));
    }
    
    // Construct random phases
