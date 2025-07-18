@@ -67,6 +67,7 @@ namespace projects {
       std::vector<Real> wavelength;  // Vector of wavelengths
       std::vector<Real> amplitude;   // Vector of velocity amplitudes
       std::vector<Real> phase;       // Vector of initial phases
+      std::vector<Real> phase_rand;  // Vector of random phases
       
       Real spectralIndex;            // Power law index for initial spectrum
       int randomSeed;               // Seed for random phase generation

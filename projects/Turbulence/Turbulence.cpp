@@ -167,8 +167,8 @@ Realf Turbulence::fillPhaseSpace(spatial_cell::SpatialCell *cell,
          Real kwave_x = kwave * kx.at(idx) / 2;
          Real kwave_y = kwave * ky.at(idx) / 2;
          
-         ux += ky.at(idx) * amplitude.at(idx) * cos(kwave_x * x + kwave_y * y + phase.at(idx));
-         uy += - kx.at(idx) * amplitude.at(idx) * cos(kwave_x * x + kwave_y * y + phase.at(idx));
+         ux += ky.at(idx) * amplitude.at(idx) * cos(kwave_x * x + kwave_y * y + phase_rand.at(idx));
+         uy += - kx.at(idx) * amplitude.at(idx) * cos(kwave_x * x + kwave_y * y + phase_rand.at(idx));
          uz += 0;
       }
       creal initV0X = ux;
@@ -247,8 +247,8 @@ void Turbulence::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFI
                    Real kwave_y = kwave * ky.at(idx) / 2;
                    Real B1 = std::pow(-1.0,idx) * amplitude.at(idx) * sqrt(mu0 * rho0);
 
-                   Bx += ky.at(idx) * B1 * cos(kwave_x * x[0] + kwave_y * x[1] + phase.at(idx));
-                   By += - kx.at(idx) * B1 * cos(kwave_x * x[0] + kwave_y * x[1] + phase.at(idx));
+                   Bx += ky.at(idx) * B1 * cos(kwave_x * x[0] + kwave_y * x[1] + phase_rand.at(idx));
+                   By += - kx.at(idx) * B1 * cos(kwave_x * x[0] + kwave_y * x[1] + phase_rand.at(idx));
                    Bz += 0;
                }
 
