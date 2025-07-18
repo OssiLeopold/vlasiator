@@ -103,13 +103,28 @@ bool Turbulence::initialize(void) {
    std::mt19937 gen(randomSeed);
 
    // Construct random kx and ky
-   std::uniform_real_distribution<> random_wavelength(Parameters::xmax / 16, Parameters::xmax);
-   std::uniform_real_distribution<> random_angle(0, 2.0 * M_PI);
+   std::vector<Real> allowed_wavelengths {};
+   int divisor {1};
+
+   for (int idx = 0; idx < 16;){
+      if (std::floor(Parameters::xmax / divisor) == Parameters::xmax / divisor){ // Check if resulting val is a whole number. Maybe not necessary?
+         allowed_wavelengths.push_back(Parameters::xmax / idx);
+         divisor++;
+         idx++;
+      }
+      else{
+         divisor++;
+      }
+   }
+
+   std::uniform_int_distribution<> random_index(0, 15);
+   
    for (int idx = 0; idx < nWaves; idx++){
-      Real k_mag = 2 * M_PI / random_wavelength(gen);
-      Real k_angle = random_angle(gen);
-      kx.push_back(k_mag * cos(k_angle));
-      ky.push_back(k_mag * sin(k_angle));
+      int index_x = random_index(gen);
+      int index_y = random_index(gen);
+
+      kx.push_back(2 * M_PI / allowed_wavelengths.at(index_x));
+      ky.push_back(2 * M_PI / allower_wavelengths.at(index_y));
    }
    
    // Construct random phases
