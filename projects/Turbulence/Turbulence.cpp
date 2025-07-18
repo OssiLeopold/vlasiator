@@ -100,13 +100,24 @@ bool Turbulence::initialize(void) {
    rho0 = m * n0; // Mass density
    p0 = n0 * kB * T; // pressure
 
-   // Construct random phases
    std::mt19937 gen(randomSeed);
-   std::uniform_real_distribution<> dis(0, 2.0 * M_PI);
-   for (int n = 0; n < nWaves; n++){
-      phase_rand.push_back(dis(gen));
+
+   // Construct random kx and ky
+   std::uniform_real_distribution<> random_wavelength(Parameters::xmax / 16, Parameters::xmax);
+   std::uniform_real_distribution<> random_angle(0, 2.0 * M_PI);
+   for (int idx = 0; idx < nWaves; idx++){
+      k_mag = 2 * M_PI / random_wavelength(gen)
+      k_angle = random_angle(gen)
+      kx.push_back(k_mag * cos(k_angle))
+      ky.push_back(k_mag * sin(k_angle))
    }
-    
+   
+   // Construct random phases
+   std::uniform_real_distribution<> random_phase(0, 2.0 * M_PI);
+   for (int idx = 0; idx < nWaves; idx++){
+      phase_rand.push_back(random_phase(gen));
+   }
+
    // Calculate Alfvén speed
    VA = B / sqrt(mu0 * rho0);
 
@@ -146,18 +157,10 @@ Realf Turbulence::fillPhaseSpace(spatial_cell::SpatialCell *cell,
       creal mass = physicalconstants::MASS_PROTON;
       creal mu0 = physicalconstants::MU_0;
       Real ux = 0.0, uy = 0.0, uz = 0.0;
-      std::array<Real,8> kx {2,1,-1,-2,-2,-1,1,2};
-      std::array<Real,8> ky {1,2,2,1,-1,-2,-2,-1};
-      //std::array<Real,4> kx {1,-1,-1,1};
-      //std::array<Real,4> ky {1,1,-1,-1};
 
       for (int idx = 0; idx < nWaves; idx++) {
-         Real kwave = 2 * M_PI / wavelength.at(idx);
-         Real kwave_x = kwave * kx.at(idx) / 2;
-         Real kwave_y = kwave * ky.at(idx) / 2;
-         
-         ux += ky.at(idx) * amplitude.at(idx) * cos(kwave_x * x + kwave_y * y + phase_rand.at(idx));
-         uy += - kx.at(idx) * amplitude.at(idx) * cos(kwave_x * x + kwave_y * y + phase_rand.at(idx));
+         ux += ky.at(idx) / sqrt(kx.at(idx)**2 + ky.at(idx)**2) * amplitude.at(idx) * cos(kx.at(idx) * x + ky.at(idx) * y + phase_rand.at(idx));
+         uy += - kx.at(idx) / sqrt(kx.at(idx)**2 + ky.at(idx)**2) * amplitude.at(idx) * cos(kx.at(idx) * x + ky.at(idx) * y + phase_rand.at(idx));
          uz += 0;
       }
       creal initV0X = ux;
@@ -224,20 +227,13 @@ void Turbulence::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFI
                std::array<Real, fsgrids::bfield::N_BFIELD>* cell = perBGrid.get(i, j, k);
 
                Real Bx = 0.0, By = 0.0, Bz = 0.0;
-               std::array<Real,8> kx {2,1,-1,-2,-2,-1,1,2};
-               std::array<Real,8> ky {1,2,2,1,-1,-2,-2,-1};
-               //std::array<Real,4> kx {1,-1,-1,1};
-               //std::array<Real,4> ky {1,1,-1,-1};
 
                // Sum contributions from all waves
                for (int idx = 0; idx < nWaves; idx++) {
-                   Real kwave = 2 * M_PI / wavelength.at(idx);
-                   Real kwave_x = kwave * kx.at(idx) / 2;
-                   Real kwave_y = kwave * ky.at(idx) / 2;
                    Real B1 = std::pow(-1.0,idx) * amplitude.at(idx) * sqrt(mu0 * rho0);
 
-                   Bx += ky.at(idx) * B1 * cos(kwave_x * x[0] + kwave_y * x[1] + phase_rand.at(idx));
-                   By += - kx.at(idx) * B1 * cos(kwave_x * x[0] + kwave_y * x[1] + phase_rand.at(idx));
+                   Bx += ky.at(idx) / sqrt(kx.at(idx)**2 + ky.at(idx)**2) * B1 * cos(kx.at(idx) * x[0] + ky.at(idx) * x[1] + phase_rand.at(idx));
+                   By += - kx.at(idx) / sqrt(kx.at(idx)**2 + ky.at(idx)**2) * B1 * cos(kx.at(idx) * x[0] + ky.at(idx) * x[1] + phase_rand.at(idx));
                    Bz += 0;
                }
 
