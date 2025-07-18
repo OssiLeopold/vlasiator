@@ -72,7 +72,7 @@ void Turbulence::getParameters() {
    // We need the correct number of parameters for the waves
    if(   nWaves != (int)wavelength.size()
       || nWaves != (int)amplitude.size()
-      || nWaves != (int)phase.size()
+      || //nWaves != (int)phase.size()
    ) {
       cerr << "Turbulence.numberOfWaves is set to " << nWaves << " so the same number of values is required for Turbulence.wavelength, Turbulence.amplitude, Turbulence.phase" << endl;
       MPI_Abort(MPI_COMM_WORLD, 1);
@@ -104,7 +104,7 @@ bool Turbulence::initialize(void) {
    std::array<Real, nWaves> phase {};
    std::mt19937 gen(randomSeed);
    std::uniform_real_distribution<> dis(0, 2.0 * M_PI);
-   for (int n = 0; n < numberOfWaves; n++){
+   for (int n = 0; n < nWaves; n++){
       phase[n] = dis(gen);
    }
     
