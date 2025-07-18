@@ -61,7 +61,7 @@ void Turbulence::getParameters() {
 
    RP::get("Turbulence.numberOfWaves", nWaves);
    RP::get("Turbulence.amplitude", amplitude);
-   RP::get("Turbulence.max_divisor", n_possible)
+   RP::get("Turbulence.numberOfPossible", n_possible);
 
    // We need the correct number of parameters for the waves
    if(   nWaves != (int)wavelength.size()
