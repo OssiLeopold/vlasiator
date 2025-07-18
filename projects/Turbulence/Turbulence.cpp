@@ -106,7 +106,7 @@ bool Turbulence::initialize(void) {
    std::uniform_real_distribution<> random_wavelength(Parameters::xmax / 16, Parameters::xmax);
    std::uniform_real_distribution<> random_angle(0, 2.0 * M_PI);
    for (int idx = 0; idx < nWaves; idx++){
-      k_mag = 2 * M_PI / random_wavelength(gen)
+      Real k_mag = 2 * M_PI / random_wavelength(gen)
       k_angle = random_angle(gen)
       kx.push_back(k_mag * cos(k_angle))
       ky.push_back(k_mag * sin(k_angle))
@@ -159,8 +159,8 @@ Realf Turbulence::fillPhaseSpace(spatial_cell::SpatialCell *cell,
       Real ux = 0.0, uy = 0.0, uz = 0.0;
 
       for (int idx = 0; idx < nWaves; idx++) {
-         ux += ky.at(idx) / sqrt(kx.at(idx)**2 + ky.at(idx)**2) * amplitude.at(idx) * cos(kx.at(idx) * x + ky.at(idx) * y + phase_rand.at(idx));
-         uy += - kx.at(idx) / sqrt(kx.at(idx)**2 + ky.at(idx)**2) * amplitude.at(idx) * cos(kx.at(idx) * x + ky.at(idx) * y + phase_rand.at(idx));
+         ux += ky.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * amplitude.at(idx) * cos(kx.at(idx) * x + ky.at(idx) * y + phase_rand.at(idx));
+         uy += - kx.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * amplitude.at(idx) * cos(kx.at(idx) * x + ky.at(idx) * y + phase_rand.at(idx));
          uz += 0;
       }
       creal initV0X = ux;
@@ -232,8 +232,8 @@ void Turbulence::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFI
                for (int idx = 0; idx < nWaves; idx++) {
                    Real B1 = std::pow(-1.0,idx) * amplitude.at(idx) * sqrt(mu0 * rho0);
 
-                   Bx += ky.at(idx) / sqrt(kx.at(idx)**2 + ky.at(idx)**2) * B1 * cos(kx.at(idx) * x[0] + ky.at(idx) * x[1] + phase_rand.at(idx));
-                   By += - kx.at(idx) / sqrt(kx.at(idx)**2 + ky.at(idx)**2) * B1 * cos(kx.at(idx) * x[0] + ky.at(idx) * x[1] + phase_rand.at(idx));
+                   Bx += ky.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * B1 * cos(kx.at(idx) * x[0] + ky.at(idx) * x[1] + phase_rand.at(idx));
+                   By += - kx.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * B1 * cos(kx.at(idx) * x[0] + ky.at(idx) * x[1] + phase_rand.at(idx));
                    Bz += 0;
                }
 
