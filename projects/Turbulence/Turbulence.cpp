@@ -44,19 +44,15 @@ void Turbulence::addParameters() {
    typedef Readparameters RP;
    
    RP::add("Turbulence.numberOfWaves", "Number of waves in the simulation", 1);
-
-   RP::addComposing("Turbulence.wavelength", "Wavelength of wave (m)");
-   RP::addComposing("Turbulence.amplitude", "Velocity amplitude (m/s)");
-   RP::addComposing("Turbulence.phase", "Initial phase (rad)");
-   
+   RP::add("Turbulence.amplitude", "Velocity amplitude (m/s)");
    
    RP::add("Turbulence.n0", "Background density (1/m^3)", 1e6);
    RP::add("Turbulence.B", "Background magnetic field strength (T)", 1e-8);
    RP::add("Turbulence.T", "Temperature (K)", 1e6);
    RP::add("Turbulence.spectralIndex", "Power law index for initial spectrum", -5.0/3.0);
    RP::add("Turbulence.randomSeed", "Seed for random phase generation", 12345);
+   RP::add("Turbulence.numberOfPossible", "How many possible wavelengths will be generated to pick from", 8);
    RP::add("Turbulence.verbose", "Verbose output", 1);
-   RP::add("Turbulence.angle", "Wave angle (rad)",0.0);
 }
 
 void Turbulence::getParameters() {
@@ -64,10 +60,8 @@ void Turbulence::getParameters() {
    Project::getParameters();
 
    RP::get("Turbulence.numberOfWaves", nWaves);
-
-   RP::get("Turbulence.wavelength", wavelength);
    RP::get("Turbulence.amplitude", amplitude);
-   RP::get("Turbulence.phase", phase);
+   RP::get("Turbulence.max_divisor", n_possible)
 
    // We need the correct number of parameters for the waves
    if(   nWaves != (int)wavelength.size()
@@ -85,7 +79,6 @@ void Turbulence::getParameters() {
    RP::get("Turbulence.spectralIndex", spectralIndex);
    RP::get("Turbulence.randomSeed", randomSeed);
    RP::get("Turbulence.verbose", verbose);
-   RP::get("Turbulence.angle", angle);
 }
 
 bool Turbulence::initialize(void) {
@@ -106,7 +99,7 @@ bool Turbulence::initialize(void) {
    std::vector<Real> allowed_wavelengths {};
    int divisor {1};
 
-   for (int idx = 0; idx < 8;){
+   for (int idx = 0; idx < n_possible;){
       if (std::floor(Parameters::xmax / divisor) == Parameters::xmax / divisor){ // Check if resulting val is a whole number. Maybe not necessary?
          std::cout << Parameters::xmax / divisor << "\n";
          allowed_wavelengths.push_back(- Parameters::xmax / divisor);
@@ -119,7 +112,7 @@ bool Turbulence::initialize(void) {
       }
    }
 
-   std::uniform_int_distribution<> random_index(0, 15);
+   std::uniform_int_distribution<> random_index(0, 2 * n_possible - 1);
    
    for (int idx = 0; idx < nWaves; idx++){
       int index_x = random_index(gen);
@@ -146,13 +139,13 @@ bool Turbulence::initialize(void) {
          std::cout << "Number of waves: " << nWaves << "\n";
          std::cout << "Background field strength: " << B << " T\n";
          std::cout << "Alfvén speed: " << VA << " m/s\n";
-         
+         std::cout << "Amplitude: " << amplitude << " m/s\n";
+
          for (int idx = 0; idx < nWaves; idx++) {
              std::cout << "\nWave " << idx + 1 << ":\n";
-             std::cout << "Wavelength: " << wavelength.at(idx) << " m\n";
-             std::cout << "Amplitude: " << amplitude.at(idx) << " m/s\n";
-             std::cout << "Phase: " << phase.at(idx) << " rad\n";
-             std::cout << "Angle: " << angle * 180/M_PI << " degrees\n";
+             std::cout << "kx: " << kx.at(idx) << "\n";
+             std::cout << "ky: " << ky.at(idx) << "\n";
+             std::cout << "Phase: " << phase_rand.at(idx) << " rad\n";
          }
       }
    }
@@ -176,8 +169,8 @@ Realf Turbulence::fillPhaseSpace(spatial_cell::SpatialCell *cell,
       Real ux = 0.0, uy = 0.0, uz = 0.0;
 
       for (int idx = 0; idx < nWaves; idx++) {
-         ux += ky.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * amplitude.at(idx) * cos(kx.at(idx) * x + ky.at(idx) * y + phase_rand.at(idx));
-         uy += - kx.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * amplitude.at(idx) * cos(kx.at(idx) * x + ky.at(idx) * y + phase_rand.at(idx));
+         ux += ky.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * amplitude * cos(kx.at(idx) * x + ky.at(idx) * y + phase_rand.at(idx));
+         uy += - kx.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * amplitude * cos(kx.at(idx) * x + ky.at(idx) * y + phase_rand.at(idx));
          uz += 0;
       }
       creal initV0X = ux;
@@ -247,7 +240,7 @@ void Turbulence::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFI
 
                // Sum contributions from all waves
                for (int idx = 0; idx < nWaves; idx++) {
-                   Real B1 = std::pow(-1.0,idx) * amplitude.at(idx) * sqrt(mu0 * rho0);
+                   Real B1 = std::pow(-1.0,idx) * amplitude * sqrt(mu0 * rho0);
 
                    Bx += ky.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * B1 * cos(kx.at(idx) * x[0] + ky.at(idx) * x[1] + phase_rand.at(idx));
                    By += - kx.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * B1 * cos(kx.at(idx) * x[0] + ky.at(idx) * x[1] + phase_rand.at(idx));
