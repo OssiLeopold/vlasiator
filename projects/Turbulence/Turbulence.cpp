@@ -101,23 +101,12 @@ bool Turbulence::initialize(void) {
    p0 = n0 * kB * T; // pressure
 
    // Construct random phases
-   std::vector<Real> phase_rand {};
    std::mt19937 gen(randomSeed);
    std::uniform_real_distribution<> dis(0, 2.0 * M_PI);
    for (int n = 0; n < nWaves; n++){
       phase_rand.push_back(dis(gen));
    }
     
-   std::vector<WaveParameters> waves {};
-   // Initialize waves based on parameters
-   for (int idx = 0; idx < nWaves; idx++) {
-       WaveParameters wave;
-       wave.wavelength = wavelength.at(idx);
-       wave.amplitude = amplitude.at(idx);
-       wave.phase = phase_rand.at(idx);
-       waves.push_back(wave);
-   }
-
    // Calculate Alfvén speed
    VA = B / sqrt(mu0 * rho0);
 
