@@ -67,7 +67,7 @@ void Turbulence::getParameters() {
 
    RP::get("Turbulence.wavelength", wavelength);
    RP::get("Turbulence.amplitude", amplitude);
-   RP::get("Turbulence.phase", phase);
+   //RP::get("Turbulence.phase", phase);
 
    // We need the correct number of parameters for the waves
    if(   nWaves != (int)wavelength.size()
@@ -100,6 +100,14 @@ bool Turbulence::initialize(void) {
    rho0 = m * n0; // Mass density
    p0 = n0 * kB * T; // pressure
 
+   // Construct random phases
+   std::array<Real, numberOfWaves> phase {};
+   std::mt19937 gen(randomSeed);
+   std::uniform_real_distribution<> dis(0, 2.0 * M_PI);
+   for (int n = 0; n < numberOfWaves; n++){
+      phase[n] = dis(gen);
+   }
+    
    std::vector<WaveParameters> waves {};
    // Initialize waves based on parameters
    for (int idx = 0; idx < nWaves; idx++) {
