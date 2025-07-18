@@ -44,7 +44,7 @@ void Turbulence::addParameters() {
    typedef Readparameters RP;
    
    RP::add("Turbulence.numberOfWaves", "Number of waves in the simulation", 1);
-   RP::add("Turbulence.amplitude", "Velocity amplitude (m/s)");
+   RP::add("Turbulence.amplitude", "Velocity amplitude (m/s)", 1e4);
    
    RP::add("Turbulence.n0", "Background density (1/m^3)", 1e6);
    RP::add("Turbulence.B", "Background magnetic field strength (T)", 1e-8);
@@ -62,15 +62,6 @@ void Turbulence::getParameters() {
    RP::get("Turbulence.numberOfWaves", nWaves);
    RP::get("Turbulence.amplitude", amplitude);
    RP::get("Turbulence.numberOfPossible", n_possible);
-
-   // We need the correct number of parameters for the waves
-   if(   nWaves != (int)wavelength.size()
-      || nWaves != (int)amplitude.size()
-      || nWaves != (int)phase.size()
-   ) {
-      cerr << "Turbulence.numberOfWaves is set to " << nWaves << " so the same number of values is required for Turbulence.wavelength, Turbulence.amplitude, Turbulence.phase" << endl;
-      MPI_Abort(MPI_COMM_WORLD, 1);
-   }
 
    // Get scalar parameters
    RP::get("Turbulence.n0", n0);
