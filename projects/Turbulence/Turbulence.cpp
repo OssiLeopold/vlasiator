@@ -108,7 +108,8 @@ bool Turbulence::initialize(void) {
 
    for (int idx = 0; idx < 16;){
       if (std::floor(Parameters::xmax / divisor) == Parameters::xmax / divisor){ // Check if resulting val is a whole number. Maybe not necessary?
-         allowed_wavelengths.push_back(Parameters::xmax / idx);
+         std::cout << Parameters::xmax / divisor << "\n";
+         allowed_wavelengths.push_back(Parameters::xmax / divisor);
          divisor++;
          idx++;
       }
