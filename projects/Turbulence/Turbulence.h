@@ -63,19 +63,16 @@ namespace projects {
       Real m;       // Particle mass
 
       // Turbulence parameters
-      int nWaves; // Number of waves in simulation
-      std::vector<Real> wavelength;  // Vector of wavelengths
+      int nWaves;                    // Number of waves in simulation
+      Real amplitude;                // Amplitude of all the waves
       std::vector<Real> kx;          // Vector for kx values
       std::vector<Real> ky;          // Vector for ky values
-      std::vector<Real> amplitude;   // Vector of velocity amplitudes
-      std::vector<Real> phase;       // Vector of initial phases
       std::vector<Real> phase_rand;  // Vector for random phases
       
       Real spectralIndex;            // Power law index for initial spectrum
-      int randomSeed;               // Seed for random phase generation
+      int randomSeed;                // Seed for random phase generation
 
       bool verbose;
-      std::vector<WaveParameters> waves;
    }; // class Turbulence
 } // namespace projects
 
