@@ -67,12 +67,12 @@ void Turbulence::getParameters() {
 
    RP::get("Turbulence.wavelength", wavelength);
    RP::get("Turbulence.amplitude", amplitude);
-   //RP::get("Turbulence.phase", phase);
+   RP::get("Turbulence.phase", phase);
 
    // We need the correct number of parameters for the waves
    if(   nWaves != (int)wavelength.size()
       || nWaves != (int)amplitude.size()
-      || //nWaves != (int)phase.size()
+      || nWaves != (int)phase.size()
    ) {
       cerr << "Turbulence.numberOfWaves is set to " << nWaves << " so the same number of values is required for Turbulence.wavelength, Turbulence.amplitude, Turbulence.phase" << endl;
       MPI_Abort(MPI_COMM_WORLD, 1);
@@ -101,11 +101,11 @@ bool Turbulence::initialize(void) {
    p0 = n0 * kB * T; // pressure
 
    // Construct random phases
-   std::array<Real, nWaves> phase {};
+   std::array<Real, nWaves> phase_rand {};
    std::mt19937 gen(randomSeed);
    std::uniform_real_distribution<> dis(0, 2.0 * M_PI);
    for (int n = 0; n < nWaves; n++){
-      phase[n] = dis(gen);
+      phase_rand[n] = dis(gen);
    }
     
    std::vector<WaveParameters> waves {};
@@ -114,7 +114,7 @@ bool Turbulence::initialize(void) {
        WaveParameters wave;
        wave.wavelength = wavelength.at(idx);
        wave.amplitude = amplitude.at(idx);
-       wave.phase = phase.at(idx);
+       wave.phase = phase_rand.at(idx);
        waves.push_back(wave);
    }
 
