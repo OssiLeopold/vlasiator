@@ -106,10 +106,10 @@ bool Turbulence::initialize(void) {
    std::uniform_real_distribution<> random_wavelength(Parameters::xmax / 16, Parameters::xmax);
    std::uniform_real_distribution<> random_angle(0, 2.0 * M_PI);
    for (int idx = 0; idx < nWaves; idx++){
-      Real k_mag = 2 * M_PI / random_wavelength(gen)
-      k_angle = random_angle(gen)
-      kx.push_back(k_mag * cos(k_angle))
-      ky.push_back(k_mag * sin(k_angle))
+      Real k_mag = 2 * M_PI / random_wavelength(gen);
+      Real k_angle = random_angle(gen);
+      kx.push_back(k_mag * cos(k_angle));
+      ky.push_back(k_mag * sin(k_angle));
    }
    
    // Construct random phases
