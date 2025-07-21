@@ -87,30 +87,34 @@ bool Turbulence::initialize(void) {
    std::mt19937 gen(randomSeed);
 
    // Construct random kx and ky
-   std::vector<Real> allowed_wavelengths {};
-   int divisor {1};
+   std::vector<Real> allowed_k {0};
+   Real k_min {2 * M_PI / Parameters::xmax};
 
-   for (int idx = 0; idx < n_possible;){
-      if (std::floor(Parameters::xmax / divisor) == Parameters::xmax / divisor){ // Check if resulting val is a whole number. Maybe not necessary?
-         std::cout << Parameters::xmax / divisor << "\n";
-         allowed_wavelengths.push_back(- Parameters::xmax / divisor);
-         allowed_wavelengths.push_back(Parameters::xmax / divisor);
-         divisor++;
-         idx++;
-      }
-      else{
-         divisor++;
-      }
+   for (int idx = 1; idx <= n_possible; idx++){
+      allowed_k.push_back(- k_min * idx);
+      allowed_k.push_back(k_min * idx);
    }
 
    std::uniform_int_distribution<> random_index(0, 2 * n_possible - 1);
+   int index_x {};
+   int index_y {};
+   Real kx_temp {};
+   Real ky_temp {};
+   Real k_mag {};
    
-   for (int idx = 0; idx < nWaves; idx++){
-      int index_x = random_index(gen);
-      int index_y = random_index(gen);
+   for (int idx = 0; idx < nWaves;){
+      index_x = random_index(gen);
+      index_y = random_index(gen);
 
-      kx.push_back(2 * M_PI / allowed_wavelengths.at(index_x));
-      ky.push_back(2 * M_PI / allowed_wavelengths.at(index_y));
+      kx_temp = allowed_k.at(index_x);
+      ky_temp = allowed_k.at(index_y);
+      k_mag = sqrt(std::pow(kx_temp, 2) + std::pow(ky_temp, 2));
+
+      if (allowed_k.at(2 * n_possible) > k_mag && k_mag > 0){
+         kx.push_back(kx_temp);
+         ky.push_back(ky_temp);
+         idx++;
+      }
    }
    
    // Construct random phases
