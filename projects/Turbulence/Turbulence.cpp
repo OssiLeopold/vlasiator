@@ -164,8 +164,8 @@ Realf Turbulence::fillPhaseSpace(spatial_cell::SpatialCell *cell,
       Real ux = 0.0, uy = 0.0, uz = 0.0;
 
       for (int idx = 0; idx < nWaves; idx++) {
-         ux += ky.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * amplitude * cos(kx.at(idx) * x + ky.at(idx) * y + phase_rand.at(idx));
-         uy += - kx.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * amplitude * cos(kx.at(idx) * x + ky.at(idx) * y + phase_rand.at(idx));
+         ux += /* ky.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * */ amplitude * cos(kx.at(idx) * x + ky.at(idx) * y + phase_rand.at(idx));
+         uy += /* - kx.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * */ amplitude * cos(kx.at(idx) * x + ky.at(idx) * y + phase_rand.at(idx));
          uz += 0;
       }
       creal initV0X = ux;
@@ -237,8 +237,8 @@ void Turbulence::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFI
                for (int idx = 0; idx < nWaves; idx++) {
                    Real B1 = std::pow(-1.0,idx) * amplitude * sqrt(mu0 * rho0);
 
-                   Bx += ky.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * B1 * cos(kx.at(idx) * x[0] + ky.at(idx) * x[1] + phase_rand.at(idx));
-                   By += - kx.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * B1 * cos(kx.at(idx) * x[0] + ky.at(idx) * x[1] + phase_rand.at(idx));
+                   Bx += /* ky.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * */ B1 * cos(kx.at(idx) * x[0] + ky.at(idx) * x[1] + phase_rand.at(idx));
+                   By += /* - kx.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * */ B1 * cos(kx.at(idx) * x[0] + ky.at(idx) * x[1] + phase_rand.at(idx));
                    Bz += 0;
                }
 
