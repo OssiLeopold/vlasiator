@@ -95,7 +95,8 @@ bool Turbulence::initialize(void) {
       allowed_k.push_back(k_min * idx);
    }
 
-   std::uniform_int_distribution<> random_index(0, 2 * n_possible);
+   std::uniform_int_distribution<> random_index_x(0, 2 * n_possible);
+   std::uniform_int_distribution<> random_index_y(0, 2 * n_possible);
    int index_x {};
    int index_y {};
    Real kx_temp {};
@@ -103,8 +104,8 @@ bool Turbulence::initialize(void) {
    Real k_mag {};
    
    for (int idx = 0; idx < nWaves;){
-      index_x = random_index(gen);
-      index_y = random_index(gen);
+      index_x = random_index_x(gen);
+      index_y = random_index_y(gen);
 
       kx_temp = allowed_k.at(index_x);
       ky_temp = allowed_k.at(index_y);
