@@ -108,8 +108,8 @@ bool Turbulence::initialize(void) {
    Real k_mag {};
    
    for (int idx = 0; idx < nWaves;){
-      index_x = random_index_x(gen2);
-      index_y = random_index_y(gen3);
+      index_x = random_index(gen2);
+      index_y = random_index(gen3);
 
       kx_temp = allowed_k.at(index_x);
       ky_temp = allowed_k.at(index_y);
