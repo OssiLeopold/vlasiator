@@ -111,8 +111,8 @@ bool Turbulence::initialize(void) {
       k_mag = sqrt(std::pow(kx_temp, 2) + std::pow(ky_temp, 2));
 
       if (allowed_k.at(2 * n_possible) >= k_mag && k_mag > 0){
-         kx.push_back(kx_temp);
-         ky.push_back(ky_temp);
+         kx.push_back(-ky_temp);
+         ky.push_back(kx_temp);
          idx++;
       }
    }
