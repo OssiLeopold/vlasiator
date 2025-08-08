@@ -84,7 +84,8 @@ bool Turbulence::initialize(void) {
    rho0 = m * n0; // Mass density
    p0 = n0 * kB * T; // pressure
 
-   std::mt19937 gen(randomSeed);
+   std::mt19937 gen1(randomSeed);
+   std::mt19937 gen2(randomSeed);
 
    // Construct random kx and ky
    std::vector<Real> allowed_k {0};
@@ -104,8 +105,8 @@ bool Turbulence::initialize(void) {
    Real k_mag {};
    
    for (int idx = 0; idx < nWaves;){
-      index_x = random_index_x(gen);
-      index_y = random_index_y(gen);
+      index_x = random_index_x(gen1);
+      index_y = random_index_y(gen2);
 
       kx_temp = allowed_k.at(index_x);
       ky_temp = allowed_k.at(index_y);
