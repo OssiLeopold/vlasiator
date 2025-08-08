@@ -85,8 +85,11 @@ bool Turbulence::initialize(void) {
    p0 = n0 * kB * T; // pressure
 
    std::mt19937 gen1(randomSeed);
-   std::mt19937 gen2(97529);
-   std::mt19937 gen3(583585);
+   std::uniform_int_distribution<> random_number(0, 1000000);
+
+   std::mt19937 gen2(random_number(gen1));
+   std::mt19937 gen3(random_number(gen1));
+   std::mt19937 gen4(random_number(gen1));
 
    // Construct random kx and ky
    std::vector<Real> allowed_k {0};
@@ -97,8 +100,7 @@ bool Turbulence::initialize(void) {
       allowed_k.push_back(k_min * idx);
    }
 
-   std::uniform_int_distribution<> random_index_x(0, 2 * n_possible);
-   std::uniform_int_distribution<> random_index_y(0, 2 * n_possible);
+   std::uniform_int_distribution<> random_index(0, 2 * n_possible);
    int index_x {};
    int index_y {};
    Real kx_temp {};
@@ -106,8 +108,8 @@ bool Turbulence::initialize(void) {
    Real k_mag {};
    
    for (int idx = 0; idx < nWaves;){
-      index_x = random_index_x(gen1);
-      index_y = random_index_y(gen2);
+      index_x = random_index_x(gen2);
+      index_y = random_index_y(gen3);
 
       kx_temp = allowed_k.at(index_x);
       ky_temp = allowed_k.at(index_y);
@@ -123,7 +125,7 @@ bool Turbulence::initialize(void) {
    // Construct random phases
    std::uniform_real_distribution<> random_phase(0, 2.0 * M_PI);
    for (int idx = 0; idx < nWaves; idx++){
-      phase_rand.push_back(random_phase(gen3));
+      phase_rand.push_back(random_phase(gen4));
    }
 
    // Calculate Alfvén speed
