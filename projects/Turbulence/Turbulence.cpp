@@ -256,6 +256,37 @@ void Turbulence::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFI
    }
 }
 
+ Realf Flowthrough::probePhaseSpace(spatial_cell::SpatialCell *cell,
+                                        const uint popID,
+                                        Real vx_in, Real vy_in, Real vz_in
+      ) const {
+      
+      const Real x  = cell->parameters[CellParams::XCRD] + 0.5*cell->parameters[CellParams::DX];
+      const Real y  = cell->parameters[CellParams::YCRD] + 0.5*cell->parameters[CellParams::DY];
+
+      creal mass = physicalconstants::MASS_PROTON;
+      creal mu0 = physicalconstants::MU_0;
+      Real ux = 0.0, uy = 0.0, uz = 0.0;
+
+      for (int idx = 0; idx < nWaves; idx++) {
+         ux += ky.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * amplitude * cos(kx.at(idx) * x + ky.at(idx) * y + phase_rand.at(idx));
+         uy += - kx.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * amplitude * cos(kx.at(idx) * x + ky.at(idx) * y + phase_rand.at(idx));
+         uz += 0;
+      }
+      creal initV0X = ux;
+      creal initV0Y = uy;
+      creal initV0Z = uz;
+
+      Real initRho = n0;
+      Real initT = T;
+
+      creal vx = vx_in - initV0X;
+      creal vy = vy_in - initV0Y;
+      creal vz = vz_in - initV0Z;
+      const Realf value = MaxwellianPhaseSpaceDensity(vx,vy,vz,initT,initRho,mass);
+      return value;
+   }
+
 std::vector<std::array<Real, 3>> Turbulence::getV0(creal x, creal y, creal z, const uint popID) const{
    std::vector<std::array<Real, 3>> centerPoints;
 
