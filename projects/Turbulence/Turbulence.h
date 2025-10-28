@@ -24,7 +24,7 @@
 #define TURBULENCE_H
 
 #include "../../definitions.h"
-#include "../project.h"
+#include "../projectTriAxisSearch.h"
 
 namespace projects {
 
@@ -34,22 +34,22 @@ namespace projects {
       Real phase;
    };
 
-   class Turbulence : public Project {
+   class Turbulence : public TriAxisSearch {
    public:
       Turbulence();
       virtual ~Turbulence();
 
-      virtual bool initialize(void);
+      virtual bool initialize(void) override;
       static void addParameters(void);
-      virtual void getParameters(void);
+      virtual void getParameters(void) override;
       virtual void setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFIELD>, FS_STENCIL_WIDTH>& perBGrid,
                                     FsGrid<std::array<Real, fsgrids::bgbfield::N_BGB>, FS_STENCIL_WIDTH>& BgBGrid,
-                                    FsGrid<fsgrids::technical, FS_STENCIL_WIDTH>& technicalGrid);
+                                    FsGrid<fsgrids::technical, FS_STENCIL_WIDTH>& technicalGrid) override;
       virtual Realf fillPhaseSpace(spatial_cell::SpatialCell *cell,
                                     const uint popID,
                                     const uint nRequested) const override;
-      virtual void calcCellParameters(spatial_cell::SpatialCell* cell, creal& t);
-      // virtual std::vector<std::array<Real, 3>> getV0(creal x, creal y, creal z, const uint popID) const;
+      virtual void calcCellParameters(spatial_cell::SpatialCell* cell, creal& t) override;
+      virtual std::vector<std::array<Real, 3>> getV0(creal x, creal y, creal z, const uint popID) const override;
       
 
       // Basic plasma parameters
@@ -69,6 +69,7 @@ namespace projects {
       std::vector<Real> kx;          // Vector for kx values
       std::vector<Real> ky;          // Vector for ky values
       std::vector<Real> phase_rand;  // Vector for random phases
+      //std::vector<std::array<Real, 3>> initial_velocities;
       
       Real spectralIndex;            // Power law index for initial spectrum
       int randomSeed;                // Seed for random phase generation
