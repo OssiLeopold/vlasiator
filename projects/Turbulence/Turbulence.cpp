@@ -256,7 +256,7 @@ void Turbulence::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFI
    }
 }
 
- Realf Flowthrough::probePhaseSpace(spatial_cell::SpatialCell *cell,
+ Realf Turbulence::probePhaseSpace(spatial_cell::SpatialCell *cell,
                                         const uint popID,
                                         Real vx_in, Real vy_in, Real vz_in
       ) const {
