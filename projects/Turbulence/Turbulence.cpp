@@ -177,7 +177,7 @@ Realf Turbulence::fillPhaseSpace(spatial_cell::SpatialCell *cell,
 
       for (int idx = 0; idx < nWaves; idx++) {
          ux += ky.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * amplitude * cos(kx.at(idx) * x + ky.at(idx) * y + kz.at(idx) * z + phase_rand.at(idx));
-         uy += kx.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * amplitude * cos(kx.at(idx) * x + ky.at(idx) * y + kz.at(idx) * z + phase_rand.at(idx));
+         uy += - kx.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * amplitude * cos(kx.at(idx) * x + ky.at(idx) * y + kz.at(idx) * z + phase_rand.at(idx));
          uz += 0;
       }
       creal initV0X = ux;
