@@ -90,6 +90,7 @@ bool Turbulence::initialize(void) {
    std::mt19937 gen2(random_number(gen1));
    std::mt19937 gen3(random_number(gen1));
    std::mt19937 gen4(random_number(gen1));
+   std::mt19937 gen5(random_number(gen1));
 
    // Construct random kx and ky
    std::vector<Real> allowed_k {0};
@@ -110,14 +111,17 @@ bool Turbulence::initialize(void) {
    for (int idx = 0; idx < nWaves;){
       index_x = random_index(gen2);
       index_y = random_index(gen3);
+      index_z = random_index(gen5);
 
       kx_temp = allowed_k.at(index_x);
       ky_temp = allowed_k.at(index_y);
+      kz_temp = allowed_k.at(index_z);
       k_mag = sqrt(std::pow(kx_temp, 2) + std::pow(ky_temp, 2));
 
       if (allowed_k.at(2 * n_possible) >= k_mag && k_mag > 0){
          kx.push_back(kx_temp);
          ky.push_back(ky_temp);
+         kz.push_back(kz_temp);
          idx++;
       }
    }
@@ -169,9 +173,9 @@ Realf Turbulence::fillPhaseSpace(spatial_cell::SpatialCell *cell,
       Real ux = 0.0, uy = 0.0, uz = 0.0;
 
       for (int idx = 0; idx < nWaves; idx++) {
-         ux += ky.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * amplitude * cos(kx.at(idx) * x + ky.at(idx) * y + phase_rand.at(idx));
-         uy += - kx.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * amplitude * cos(kx.at(idx) * x + ky.at(idx) * y + phase_rand.at(idx));
-         uz += 0;
+         ux += ky.at(idx) * kz.at(idx) / (std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * amplitude * cos(kx.at(idx) * x + ky.at(idx) * y + 2 * kz.at(idx) * z + phase_rand.at(idx));
+         uy += kx.at(idx) * kz.at(idx) / (std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * amplitude * cos(kx.at(idx) * x + ky.at(idx) * y + 2 * kz.at(idx) * z + phase_rand.at(idx));
+         uz += - kx.at(idx) * ky.at(idx) / (std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * amplitude * cos(kx.at(idx) * x + ky.at(idx) * y + 2 * kz.at(idx) + phase_rand.at(idx));
       }
       creal initV0X = ux;
       creal initV0Y = uy;
@@ -242,9 +246,9 @@ void Turbulence::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFI
                for (int idx = 0; idx < nWaves; idx++) {
                    Real B1 = std::pow(-1.0,idx) * amplitude * sqrt(mu0 * rho0);
 
-                   Bx += ky.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * B1 * cos(kx.at(idx) * x[0] + ky.at(idx) * x[1] + phase_rand.at(idx));
-                   By += - kx.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * B1 * cos(kx.at(idx) * x[0] + ky.at(idx) * x[1] + phase_rand.at(idx));
-                   Bz += 0;
+                   Bx += ky.at(idx) * kz.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * B1 * cos(kx.at(idx) * x[0] + ky.at(idx) * x[1] + 2 * kz.at(idx) * x[2] + phase_rand.at(idx));
+                   By += kx.at(idx) * kz.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * B1 * cos(kx.at(idx) * x[0] + ky.at(idx) * x[1] + 2 * kz.at(idx) * x[2] + phase_rand.at(idx));
+                   Bz += - kx.at(idx) * ky.at(idx) / sqrt(std::pow(kx.at(idx),2) + std::pow(ky.at(idx),2)) * B1 * cos(kx.at(idx) * x[0] + ky.at(idx) * x[1] + 2 * kz.at(idx) * x[2] + phase_rand.at(idx));
                }
 
                cell->at(fsgrids::bfield::PERBX) = Bx;
