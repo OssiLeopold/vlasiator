@@ -104,8 +104,10 @@ bool Turbulence::initialize(void) {
    std::uniform_int_distribution<> random_index(0, 2 * n_possible);
    int index_x {};
    int index_y {};
+   int index_z {};
    Real kx_temp {};
    Real ky_temp {};
+   Real kz_temp {};
    Real k_mag {};
    
    for (int idx = 0; idx < nWaves;){

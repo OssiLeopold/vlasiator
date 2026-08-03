@@ -70,6 +70,7 @@ namespace projects {
       Real amplitude;                // Amplitude of all the waves
       std::vector<Real> kx;          // Vector for kx values
       std::vector<Real> ky;          // Vector for ky values
+      std::vector<Real> kz;          // Vector for kz values
       std::vector<Real> phase_rand;  // Vector for random phases
       //std::vector<std::array<Real, 3>> initial_velocities;
       
