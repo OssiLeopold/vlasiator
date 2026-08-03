@@ -169,6 +169,7 @@ Realf Turbulence::fillPhaseSpace(spatial_cell::SpatialCell *cell,
       // Fetch spatial cell center coordinates
       const Real x  = cell->parameters[CellParams::XCRD] + 0.5*cell->parameters[CellParams::DX];
       const Real y  = cell->parameters[CellParams::YCRD] + 0.5*cell->parameters[CellParams::DY];
+      const Real z  = cell->parameters[CellParams::ZCRD] + 0.5*cell->parameters[CellParams::DZ];
 
       creal mass = physicalconstants::MASS_PROTON;
       creal mu0 = physicalconstants::MU_0;
