@@ -1,24 +1,20 @@
 # Suggested modules
 #
-# ml gcc/12.2.0 openmpi/4.1.6--gcc--12.2.0 nvhpc/23.11 cuda/12.1  
+# ml openmpi
 #
 # Build libraries with ./build_libraries.sh leonardo_booster
 
 #======== Vectorization ==========
-#Set vector backend type for vlasov solvers, sets precision and length.
+#GPU Vlasov solvers no longer use any vectorclass.
 #Options:
 # AVX:	    VEC4D_AGNER, VEC4F_AGNER, VEC8F_AGNER
 # AVX512:   VEC8D_AGNER, VEC16F_AGNER
 # Fallback: VECTORCLASS = VEC_FALLBACK_GENERIC
 VECTORCLASS = VEC_FALLBACK_GENERIC
 
-#===== Vector Lengths ====
-# Default for VEC_FALLBACK_GENERIC is WID=4, VECL=8
-# NOTE: A bug currently results in garbage data already on cell init if VECL is not equal to WID2
-WID=8
-VECL=64
-#WID=4
-#VECL=16
+# VMesh Block size: (historical value 4, also 8 supported)
+#WID=8
+WID=4
 
 #======== Libraries ===========
 LIBRARY_PREFIX = libraries-leonardo_booster
@@ -37,9 +33,9 @@ USE_CUDA=1
 # use "-Xptxas -v" for verbose output of ptx compilation
 # --cudart shared used for Kostis' mempool_ts
 
-CXXFLAGS = -g -O3 -x cu -std=c++17 --extended-lambda --expt-relaxed-constexpr -gencode arch=compute_80,code=sm_80 --cudart shared --generate-line-info -line-info -Xcompiler="-fopenmp" -Xcompiler="-fpermissive" -maxrregcount 24 -Wno-deprecated-declarations
+CXXFLAGS = -g -O3 -x cu -std=c++20 --extended-lambda --expt-relaxed-constexpr -gencode arch=compute_80,code=sm_80 --cudart shared --generate-line-info -line-info -Xcompiler="-fopenmp" -Xcompiler="-fpermissive" -maxrregcount 24 -Wno-deprecated-declarations
 
-testpackage: CXXFLAGS = -g -O2 -x cu -std=c++17 --extended-lambda --expt-relaxed-constexpr -gencode arch=compute_80,code=sm_80 --cudart shared --generate-line-info -line-info -Xcompiler="-fopenmp" -Xcompiler="-fpermissive" -maxrregcount 24 -Wno-deprecated-declarations
+testpackage: CXXFLAGS = -g -O2 -x cu -std=c++20 --extended-lambda --expt-relaxed-constexpr -gencode arch=compute_80,code=sm_80 --cudart shared --generate-line-info -line-info -Xcompiler="-fopenmp" -Xcompiler="-fpermissive" -maxrregcount 24 -Wno-deprecated-declarations
 
 # Tell mpic++ to use nvcc for all compiling
 CMP = OMPI_CXX='nvcc' OMPI_CXXFLAGS='' mpic++

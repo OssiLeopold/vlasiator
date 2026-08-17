@@ -1,3 +1,8 @@
+# Print a friendly banner
+$(shell echo "=[Thank you for]=================================" 1>&2)
+$(shell echo "4pSP4pSTIOKVuyDilbvilbvilbsgIOKVuuKUs+KUk+KVu+KUj+KUk+KVu+KUj+KUgeKVuCAgIOKVuyDilbvilbsgIOKUj+KUgeKUk+KUj+KUgeKUk+KVu+KUj+KUgeKUk+KVuuKUs+KVuOKUj+KUgeKUk+KUj+KUgeKUk+KVuwrilKPilLvilJPilIMg4pSD4pSD4pSDICAg4pSD4pSD4pSD4pSD4pSX4pSr4pSD4pW64pSTICAg4pSD4pSP4pSb4pSDICDilKPilIHilKvilJfilIHilJPilIPilKPilIHilKsg4pSDIOKUgyDilIPilKPilLPilJvilbkK4pSX4pSB4pSb4pSX4pSB4pSb4pW54pSX4pSB4pW44pW64pS74pSb4pW54pW5IOKVueKUl+KUgeKUmyAgIOKUl+KUmyDilJfilIHilbjilbkg4pW54pSX4pSB4pSb4pW54pW5IOKVuSDilbkg4pSX4pSB4pSb4pW54pSX4pW44pW5Cg==" | base64 -d 1>&2)
+$(shell echo "============[recommended by 9 out of 10 doctors]=\n" 1>&2)
+
 #set default architecture, can be overridden from the compile line
 ARCH = ${VLASIATOR_ARCH}
 
@@ -124,6 +129,21 @@ ifeq ($(USE_HIP),1)
 	INC_VECTORCLASS =
 endif
 
+#Update GPU memeory pointer list
+ifeq ($(USE_GPU),1)
+$(shell ./updateGpuMemoryPointerList.sh 1>&2)
+endif
+
+#GPU specs
+ifeq ($(USE_GPU),1)
+	ifdef THREADS_PER_MP
+		COMPFLAGS += -DTHREADS_PER_MP=$(THREADS_PER_MP)
+	endif
+	ifdef REGISTERS_PER_MP
+		COMPFLAGS += -DREGISTERS_PER_MP=$(REGISTERS_PER_MP)
+	endif
+endif
+
 #Vectorclass settings
 ifdef WID
 	COMPFLAGS += -DWID=$(WID)
@@ -178,6 +198,9 @@ LIBS += ${LIB_PROFILE}
 LIBS += ${LIB_VLSV}
 LIBS += ${LIB_JEMALLOC}
 LIBS += ${LIB_PAPI}
+LIBS += ${LIB_OCTREE_COMPRESSOR}
+LIBS += ${LIB_ZFP}
+LIBS += ${LIB_NN_COMPRESSOR}
 
 # Define common dependencies
 DEPS_COMMON = common.h common.cpp definitions.h mpiconversion.h logger.h object_wrapper.h
@@ -187,7 +210,8 @@ DEPS_COMMON = common.h common.cpp definitions.h mpiconversion.h logger.h object_
 OBJS = 	version.o memoryallocation.o memory_report.o backgroundfield.o quadr.o dipole.o linedipole.o vectordipole.o constantfield.o integratefunction.o \
 	datareducer.o datareductionoperator.o dro_populations.o \
 	donotcompute.o ionosphere.o copysphere.o outflow.o inflow.o setmaxwellian.o\
-	fieldtracing.o arch_moments.o \
+	compression_tools.o\
+	fieldtracing.o compression.o arch_moments.o \
 	sysboundary.o sysboundarycondition.o particle_species.o\
 	project.o projectTriAxisSearch.o read_gaussian_population.o\
 	Alfven.o Diffusion.o Dispersion.o Distributions.o Firehose.o\
@@ -203,15 +227,16 @@ OBJS = 	version.o memoryallocation.o memory_report.o backgroundfield.o quadr.o d
 
 # Add Vlasov solver objects
 OBJS += cpu_acc_intersections.o cpu_acc_transform.o \
-	cpu_trans_pencils.o cpu_pitch_angle_diffusion.o 
+	cpu_trans_pencils.o common_pitch_angle_diffusion.o 
 
 # Only build GPU version object files if active
 ifeq ($(USE_GPU),1)
-	OBJS += gpu_acc_map.o gpu_acc_semilag.o gpu_acc_sort_blocks.o \
-		gpu_base.o gpu_trans_map_amr.o gpu_dt.o gpu_moments.o
+	OBJS += gpu_acc_map.o gpu_acc_semilag.o gpu_base.o gpu_dt.o \
+		gpu_trans_map_amr.o gpu_moments.o gpu_pitch_angle_diffusion.o
 else
 # if *not* building GPU version, build regular CPU/ARCH version
-	OBJS += cpu_acc_map.o cpu_acc_sort_blocks.o cpu_acc_load_blocks.o cpu_acc_semilag.o  cpu_trans_map_amr.o arch_dt.o
+	OBJS += cpu_acc_map.o cpu_acc_sort_blocks.o cpu_acc_load_blocks.o cpu_acc_semilag.o \
+		cpu_trans_map_amr.o arch_dt.o cpu_pitch_angle_diffusion.o 
 endif
 
 # Add field solver objects
@@ -261,10 +286,10 @@ version.cpp: FORCE
 #Special handling for GPU files
 ifeq ($(USE_GPU),1)
 # Turn on compilation for of GPU-version of spatial_cell and block_adjust
-spatial_cell.o: spatial_cells/spatial_cell_gpu.cpp
+spatial_cell.o: spatial_cells/spatial_cell_gpu.cpp spatial_cells/spatial_cell_gpu.hpp spatial_cells/spatial_cell_gpu_kernels.hpp
 	@echo [CC] $<
 	$(SILENT)$(CMP) $(CXXFLAGS) ${MATHFLAGS} $(FLAGS) -c spatial_cells/spatial_cell_gpu.cpp -o spatial_cell.o $(INC_BOOST) ${INC_DCCRG} ${INC_EIGEN} ${INC_ZOLTAN} ${INC_VECTORCLASS} ${INC_FSGRID}
-block_adjust.o: spatial_cells/block_adjust_gpu.cpp
+block_adjust.o: spatial_cells/block_adjust_gpu.cpp spatial_cells/block_adjust_gpu.hpp spatial_cells/block_adjust_gpu_kernels.hpp
 	@echo [CC] $<
 	$(SILENT)$(CMP) $(CXXFLAGS) ${MATHFLAGS} $(FLAGS) -c spatial_cells/block_adjust_gpu.cpp -o block_adjust.o $(INC_BOOST) ${INC_DCCRG} ${INC_EIGEN} ${INC_ZOLTAN} ${INC_VECTORCLASS} ${INC_FSGRID}
 else
@@ -274,10 +299,10 @@ else
 arch/gpu_base.o:
 	@: #do nothing
 # Turn on compilation for of old cpu-version of spatial_cell
-spatial_cell.o: spatial_cells/spatial_cell_cpu.cpp
+spatial_cell.o: spatial_cells/spatial_cell_cpu.cpp spatial_cells/spatial_cell_cpu.hpp
 	@echo [CC] $<
 	$(SILENT)$(CMP) $(CXXFLAGS) ${MATHFLAGS} $(FLAGS) -c spatial_cells/spatial_cell_cpu.cpp -o spatial_cell.o $(INC_BOOST) ${INC_DCCRG} ${INC_EIGEN} ${INC_ZOLTAN} ${INC_VECTORCLASS} ${INC_FSGRID}
-block_adjust.o: spatial_cells/block_adjust_cpu.cpp
+block_adjust.o: spatial_cells/block_adjust_cpu.cpp spatial_cells/block_adjust_cpu.hpp
 	@echo [CC] $<
 	$(SILENT)$(CMP) $(CXXFLAGS) ${MATHFLAGS} $(FLAGS) -c spatial_cells/block_adjust_cpu.cpp -o block_adjust.o $(INC_BOOST) ${INC_DCCRG} ${INC_EIGEN} ${INC_ZOLTAN} ${INC_VECTORCLASS} ${INC_FSGRID}
 endif
@@ -286,7 +311,7 @@ endif
 # for all files in the main source dir
 %.o: %.cpp
 	@echo [CC] $<
-	$(SILENT)$(CMP) $(CXXFLAGS) ${MATHFLAGS} $(FLAGS) -c $< $(INC_BOOST) ${INC_DCCRG} ${INC_EIGEN} ${INC_ZOLTAN} ${INC_VECTORCLASS} ${INC_FSGRID} ${INC_PROFILE} ${INC_VLSV} ${INC_PAPI} ${INC_MPI}
+	$(SILENT)$(CMP) $(CXXFLAGS) ${MATHFLAGS} $(FLAGS) -c $< $(INC_BOOST) ${INC_DCCRG} ${INC_EIGEN} ${INC_ZOLTAN} ${INC_VECTORCLASS} ${INC_FSGRID} ${INC_PROFILE} ${INC_VLSV} ${INC_PAPI} ${INC_MPI} ${INC_ZFP} ${INC_OCTREE_COMPRESSOR} ${INC_NN_COMPRESSOR}
 
 # for all files in the arch/ dir
 %.o: arch/%.cpp
@@ -332,7 +357,12 @@ endif
 # for all files in the fieldsolver/ dir
 %.o: fieldsolver/%.cpp ${DEPS_FSOLVER}
 	@echo [CC] $<
-	$(SILENT)${CMP} ${CXXFLAGS} ${MATHFLAGS} ${FLAGS} -c $< -I$(CURDIR)  ${INC_BOOST} ${INC_EIGEN} ${INC_DCCRG} ${INC_FSGRID} ${INC_PROFILE} ${INC_ZOLTAN}
+	$(SILENT)${CMP} ${CXXFLAGS} ${FLAGS} -c $< -I$(CURDIR)  ${INC_BOOST} ${INC_EIGEN} ${INC_DCCRG} ${INC_FSGRID} ${INC_PROFILE} ${INC_ZOLTAN}
+	
+# for all files in the vdf_compression/ dir
+%.o: vdf_compression/%.cpp
+	@echo [CC] $<
+	$(SILENT)${CMP} ${CXXFLAGS} ${FLAGS} ${MATHFLAGS} -c $< ${INC_DCCRG} ${INC_FSGRID} ${INC_BOOST} ${INC_NN_COMPRESSOR} ${INC_ZOLTAN} ${INC_EIGEN} ${INC_ZFP} ${INC_OCTREE_COMPRESSOR}
 
 # Make executable
 vlasiator: $(OBJS) $(OBJS_FSOLVER)

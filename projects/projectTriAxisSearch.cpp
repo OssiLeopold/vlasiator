@@ -35,10 +35,10 @@ namespace projects {
       vmesh::VelocityMesh *vmesh = cell->get_velocity_mesh(popID);
 
       vmesh::GlobalID *GIDbuffer;
-      #ifdef USE_GPU
-      // Host-pinned memory buffer, max possible size
       const vmesh::LocalID* vblocks_ini = cell->get_velocity_grid_length(popID);
       const uint blocksCount = vblocks_ini[0]*vblocks_ini[1]*vblocks_ini[2];
+      #ifdef USE_GPU
+      // Host-pinned memory buffer, max possible size
       CHK_ERR( gpuMallocHost((void**)&GIDbuffer,blocksCount*sizeof(vmesh::GlobalID)) );
       #endif
       // Non-GPU: insert directly into vmesh
@@ -50,8 +50,9 @@ namespace projects {
       creal minValue = cell->getVelocityBlockMinValue(popID);
       // And how big a buffer do we add to the edges?
       uint buffer = 2;
-      if (WID > 4) {
+      if (WID > 4 && blocksCount > 8) {
          // With WID8 a two-block buffer increases memory requirements too much.
+         // However, we allow extra buffer for very minimal v-spaces.
          buffer = 1;
       }
       // How much below the sparsity can a cell be to still be included?
@@ -121,7 +122,7 @@ namespace projects {
          counterZ+=buffer;
          vRadiusSquared = max(vRadiusSquared, (Real)counterZ*(Real)counterZ*dvzBlock*dvzBlock);
 
-         #ifndef USE_GPU
+         #ifndef USE_GPU // non-GPU mesh resizing
          // sphere volume is 4/3 pi r^3, approximate that 5*counterX*counterY*counterZ is enough.
          vmesh::LocalID currentMaxSize = LID + 5*counterX*counterY*counterZ;
          vmesh->setNewSize(currentMaxSize);
@@ -144,7 +145,7 @@ namespace projects {
                              + (V_crds[1])*(V_crds[1])
                              + (V_crds[2])*(V_crds[2]));
 
-                  #ifndef USE_GPU
+                  #ifndef USE_GPU // non-GPU mesh resizing
                   if (LID >= currentMaxSize) {
                      currentMaxSize = LID + counterX*counterY*counterZ;
                      vmesh->setNewSize(currentMaxSize);
@@ -169,12 +170,11 @@ namespace projects {
             } // vyblocks_ini
          } // vzblocks_ini
       } // iteration over V0's
-
       // Set final size of vmesh
       cell->get_population(popID).N_blocks = LID;
 
       #ifdef USE_GPU
-      // Copy data into place
+      // Copy data from CPU to GPU
       cell->dev_resize_vmesh(popID,LID);
       vmesh::GlobalID *GIDtarget = vmesh->getGrid()->data();
       gpuStream_t stream = gpu_getStream();
@@ -182,6 +182,7 @@ namespace projects {
       CHK_ERR( gpuStreamSynchronize(stream) );
       CHK_ERR( gpuFreeHost(GIDbuffer));
       #else
+      // Resize vmesh down to final size
       vmesh->setNewSize(LID);
       #endif
 

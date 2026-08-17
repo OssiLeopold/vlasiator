@@ -4,8 +4,12 @@
    "editor.detectIndentation": false,
    "files.associations": {
       "*.ipp": "cpp",
+<<<<<<< HEAD
       "cmath": "cpp",
       "complex": "cpp",
       "array": "cpp"
+=======
+      "unordered_set": "cpp"
+>>>>>>> upstream/dev
    },
 }

@@ -52,20 +52,55 @@ namespace spatial_cell {
       const vector<CellID>& cells,
       const uint popID=0);
 
-} // namespaces
+   void clear_maps_caller(
+      const uint nCells,
+      const size_t largestSizePower,
+      gpuStream_t stream=0,
+      const size_t offset=0);
 
-extern vmesh::VelocityMesh** host_vmeshes, **dev_vmeshes;
-extern vmesh::VelocityBlockContainer** host_VBCs, **dev_VBCs;
-extern Hashinator::Hashmap<vmesh::GlobalID,vmesh::LocalID>** host_allMaps, **dev_allMaps;
-extern split::SplitVector<vmesh::GlobalID> ** host_vbwcl_vec, **dev_vbwcl_vec;
-extern split::SplitVector<vmesh::GlobalID> ** host_lists_with_replace_new, **dev_lists_with_replace_new;
-extern split::SplitVector<Hashinator::hash_pair<vmesh::GlobalID,vmesh::LocalID>> **host_lists_delete, **dev_lists_delete;
-extern split::SplitVector<Hashinator::hash_pair<vmesh::GlobalID,vmesh::LocalID>> **host_lists_to_replace, **dev_lists_to_replace;
-extern split::SplitVector<Hashinator::hash_pair<vmesh::GlobalID,vmesh::LocalID>> **host_lists_with_replace_old, **dev_lists_with_replace_old;
-extern split::SplitVector<vmesh::GlobalID> ** host_vbwcl_neigh, **dev_vbwcl_neigh;
-extern vmesh::LocalID* host_contentSizes, *dev_contentSizes;
-extern Real* host_minValues, *dev_minValues;
-extern Real* host_massLoss, *dev_massLoss;
-extern Real* host_mass, *dev_mass;
+   void batch_adjust_blocks_caller(
+      dccrg::Dccrg<spatial_cell::SpatialCell,dccrg::Cartesian_Geometry>& mpiGrid,
+      const vector<CellID>& cellsToAdjust,
+      const uint cellOffset,
+      uint &largestBlocksToChange,
+      uint &largestBlocksBeforeOrAfter,
+      const uint popID=0
+      );
+
+   // Non-templated caller functions due to dual use from both block adjustment and acceleration
+   void extract_to_replace_caller(
+      Hashinator::Hashmap<vmesh::GlobalID,vmesh::LocalID>** input_maps,
+      split::SplitVector<Hashinator::hash_pair<vmesh::GlobalID,vmesh::LocalID>> **output_vecs,
+      vmesh::LocalID* output_sizes,
+      vmesh::VelocityMesh** rule_meshes,
+      Hashinator::Hashmap<vmesh::GlobalID,vmesh::LocalID>** rule_maps,
+      split::SplitVector<vmesh::GlobalID>** rule_vectors,
+      const uint nCells,
+      gpuStream_t stream
+      );
+
+   void extract_to_delete_or_move_caller(
+      Hashinator::Hashmap<vmesh::GlobalID,vmesh::LocalID>** input_maps,
+      split::SplitVector<Hashinator::hash_pair<vmesh::GlobalID,vmesh::LocalID>> **output_vecs,
+      vmesh::LocalID* output_sizes,
+      vmesh::VelocityMesh** rule_meshes,
+      Hashinator::Hashmap<vmesh::GlobalID,vmesh::LocalID>** rule_maps,
+      split::SplitVector<vmesh::GlobalID>** rule_vectors,
+      const uint nCells,
+      gpuStream_t stream
+      );
+
+   void extract_to_add_caller(
+      Hashinator::Hashmap<vmesh::GlobalID,vmesh::LocalID>** input_maps,
+      split::SplitVector<vmesh::GlobalID> **output_vecs,
+      vmesh::LocalID* output_sizes,
+      vmesh::VelocityMesh** rule_meshes,
+      Hashinator::Hashmap<vmesh::GlobalID,vmesh::LocalID>** rule_maps,
+      split::SplitVector<vmesh::GlobalID>** rule_vectors,
+      const uint nCells,
+      gpuStream_t stream
+      );
+
+} // namespaces
 
 #endif

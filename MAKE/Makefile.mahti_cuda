@@ -2,22 +2,19 @@
 #
 # module purge
 # ml gcc/10.4.0 openmpi/4.1.5-cuda cuda/12.1.1 boost/1.82.0-mpi papi/7.1.0
+# ./build_fetched_libraries.sh mahti_cuda
 
 #======== Vectorization ==========
-#Set vector backend type for vlasov solvers, sets precision and length.
+#GPU Vlasov solvers no longer use any vectorclass.
 #Options:
 # AVX:	    VEC4D_AGNER, VEC4F_AGNER, VEC8F_AGNER
 # AVX512:   VEC8D_AGNER, VEC16F_AGNER
 # Fallback: VECTORCLASS = VEC_FALLBACK_GENERIC
 VECTORCLASS = VEC_FALLBACK_GENERIC
 
-#===== Vector Lengths ====
-# Default for VEC_FALLBACK_GENERIC is WID=4, VECL=8
-# NOTE: A bug currently results in garbage data already on cell init if VECL is not equal to WID2
+# VMesh Block size: (historical value 4, also 8 supported)
 #WID=8
-#VECL=64
 WID=4
-VECL=16
 
 #======= Compiler and compilation flags =========
 # NOTES on compiler flags:
@@ -32,14 +29,17 @@ VECL=16
 #                         errors that come up when using
 #                         mpi.h in c++ on Cray
 
+#======== Libraries ===========
+LIBRARY_PREFIX = libraries-mahti_cuda
+
 USE_CUDA=1
 
 #-ggdb not available on nvcc
 #-G (device debug) overrides --generate-line-info -line-info but also requires more device-side resources to run
 # use "-Xptxas -v" for verbose output of ptx compilation
 # --cudart shared used for Kostis' mempool_ts
-CXXFLAGS = -g -O3 -x cu -std=c++20 --extended-lambda --expt-relaxed-constexpr -gencode arch=compute_80,code=sm_80 --cudart shared --generate-line-info -line-info -Xcompiler="-fopenmp" -Xcompiler="-fpermissive" -maxrregcount 24 -Wno-deprecated-declarations
-testpackage: CXXFLAGS = -g -O2 -x cu -std=c++20 --extended-lambda --expt-relaxed-constexpr -gencode arch=compute_80,code=sm_80 --cudart shared --generate-line-info -line-info -Xcompiler="-fopenmp" -Xcompiler="-fpermissive" -maxrregcount 24 -Wno-deprecated-declarations
+CXXFLAGS = -g -O3 -x cu -std=c++20 --extended-lambda --expt-relaxed-constexpr -gencode arch=compute_80,code=sm_80 --cudart shared --generate-line-info -line-info -Xcompiler="-fopenmp" -Xcompiler="-fpermissive" -maxrregcount 24 -Wno-deprecated-declarations -diag-suppress 63
+testpackage: CXXFLAGS = -g -O2 -x cu -std=c++20 --extended-lambda --expt-relaxed-constexpr -gencode arch=compute_80,code=sm_80 --cudart shared --generate-line-info -line-info -Xcompiler="-fopenmp" -Xcompiler="-fpermissive" -maxrregcount 24 -Wno-deprecated-declarations -diag-suppress 63
 
 # Tell mpic++ to use nvcc for all compiling
 CMP = OMPI_CXX='nvcc' OMPI_CXXFLAGS='' mpic++
@@ -53,7 +53,7 @@ MATHFLAGS = --use_fast_math
 # nvcc fast_math does not assume only finite math
 testpackage: MATHFLAGS = --prec-sqrt=true --prec-div=true --ftz=false --fmad=false
 
-LDFLAGS = -O2 -g -G -L/appl/spack/v020/install-tree/gcc-10.4.0/cuda-12.1.1-2ppwzf/lib64 -lnvToolsExt --cudart shared
+LDFLAGS = -O2 -g -G -L/appl/spack/v020/install-tree/gcc-10.4.0/cuda-12.1.1-2ppwzf/lib64 -lnvToolsExt --cudart shared  -Xlinker=-rpath=$(CURDIR)/$(LIBRARY_PREFIX)/lib
 LIB_MPI = -lgomp
 INC_MPI = -I/appl/spack/v020/install-tree/gcc-10.4.0/openmpi-4.1.5-xykxbk/include -I/appl/spack/v020/install-tree/gcc-10.4.0/openmpi-4.1.5-xykxbk/include/openmpi -I/appl/spack/syslibs/include
 
@@ -74,21 +74,23 @@ testpackage: CXXFLAGS += -DPAPI_MEM
 
 #======== Libraries ===========
 
-LIBRARY_PREFIX = /projappl/project_2004522/libraries/gcc-10.4.0/openmpi-4.1.5-cuda/cuda-12.1.1/
+# Old library prefix for project-managed libraries
+# LIBRARY_PREFIX = /projappl/project_2004522/libraries/gcc-10.4.0/openmpi-4.1.5-cuda/cuda-12.1.1/
 
-#======== Compiled Libraries ===========
+#======== Module Libraries ===========
 LIB_BOOST = -lboost_program_options -Xlinker=-rpath=/appl/spack/v020/install-tree/gcc-10.4.0/boost-1.82.0-ystwi2/lib/
 
 LIB_PAPI = -lpapi -Xlinker=-rpath=/appl/spack/v020/install-tree/gcc-10.4.0/papi-7.1.0-pl56uv/lib
 
-INC_ZOLTAN = -isystem /$(LIBRARY_PREFIX)/zoltan/include
-LIB_ZOLTAN = -L/$(LIBRARY_PREFIX)/zoltan/lib -lzoltan
+#======== Compiled Libraries ===========
+INC_ZOLTAN = -isystem /$(LIBRARY_PREFIX)/include
+LIB_ZOLTAN = -L/$(LIBRARY_PREFIX)/lib -lzoltan
 
-INC_VLSV = -I$(LIBRARY_PREFIX)/vlsv
-LIB_VLSV = -L$(LIBRARY_PREFIX)/vlsv -lvlsv -Xlinker=-rpath=$(LIBRARY_PREFIX)/vlsv/lib
+INC_VLSV = -I$(LIBRARY_PREFIX)/include
+LIB_VLSV = -L$(LIBRARY_PREFIX)/lib -lvlsv
 
-INC_PROFILE = -I$(LIBRARY_PREFIX)/phiprof/include
-LIB_PROFILE = -L$(LIBRARY_PREFIX)/phiprof/lib -lphiprof -Xlinker=-rpath=$(LIBRARY_PREFIX)/phiprof/lib
+INC_PROFILE = -I$(LIBRARY_PREFIX)/include
+LIB_PROFILE = -L$(LIBRARY_PREFIX)/lib -lphiprof
 
 #======== Header-only Libraries ===========
 # included as submodules

@@ -18,10 +18,13 @@
 #define gpuGetDevice                     hipGetDevice
 #define gpuGetDeviceCount                hipGetDeviceCount
 #define gpuGetDeviceProperties           hipGetDeviceProperties
+#define gpuDeviceGetAttribute            hipDeviceGetAttribute
 #define gpuDeviceSynchronize             hipDeviceSynchronize
 #define gpuDeviceReset                   hipDeviceReset
 #define gpuCpuDeviceId                   hipCpuDeviceId
 #define gpuMemGetInfo                    hipMemGetInfo
+
+#define gpuDevAttrMaxBlocksPerMultiprocessor    hipDeviceAttributeMaxBlocksPerMultiProcessor // This is not well defined on AMD
 
 #define gpuFree                          hipFree
 #define gpuFreeHost                      hipHostFree
@@ -79,11 +82,14 @@
 #define gpuMemcpyDeviceToHost            hipMemcpyDeviceToHost
 #define gpuMemcpyHostToDevice            hipMemcpyHostToDevice
 #define gpuMemcpyDeviceToDevice          hipMemcpyDeviceToDevice
+#define gpuMemcpyHostToHost              hipMemcpyHostToHost
 #define gpuMemcpyToSymbol                hipMemcpyToSymbol
 
 #define gpuKernelBallot(mask, input)     __ballot(input)
 #define gpuKernelAny(mask, input)        __any(input)
 #define gpuKernelShfl(input, source, mask)  __shfl(input, source)
+#define gpuKernelShflDown(val, offset) __shfl_down(val, offset)
+#define gpuWarpSync() ((void)0) //do nothing
 
 /* Define architecture-specific macros */
 #define ARCH_LOOP_LAMBDA [=] __host__ __device__
@@ -452,6 +458,7 @@ namespace arch{
          CHK_ERR(hipPeekAtLastError());
          /* Synchronize after kernel call */
          CHK_ERR(hipStreamSynchronize(gpuStreamList[thread_id]));
+         CHK_ERR(hipFreeAsync(d_limits, gpuStreamList[thread_id]));
          return;
       }
 

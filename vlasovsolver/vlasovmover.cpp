@@ -45,7 +45,6 @@
 #include "cpu_acc_transform.hpp" // for updateAccelerationMaxdt
 #ifdef USE_GPU
 #include "gpu_moments.h"
-#include "gpu_acc_map.hpp"
 #include "gpu_acc_semilag.hpp"
 #include "gpu_trans_map_amr.hpp"
 #else
@@ -53,7 +52,6 @@
 #include "cpu_trans_map_amr.hpp"
 #endif
 
-using namespace std;
 using namespace spatial_cell;
 
 /** Propagates the distribution function in spatial space.
@@ -85,7 +83,7 @@ void calculateSpatialTranslation(
    MPI_Barrier(MPI_COMM_WORLD);
    btzTimer.stop();
 
-    // ------------- SLICE - map dist function in Z --------------- //
+   // ------------- SLICE - map dist function in Z --------------- //
    if(P::zcells_ini > 1){
 
       phiprof::Timer transTimer {"transfer-stencil-data-z", {"MPI"}};
@@ -208,7 +206,7 @@ void calculateSpatialGhostTranslation(
    dccrg::Dccrg<SpatialCell,dccrg::Cartesian_Geometry>& mpiGrid,
    const vector<CellID>& local_propagated_cells,
    vector<uint>& nPencils,
-   creal dt,
+   const creal dt,
    const uint popID,
    Real &time
    ) {
@@ -397,7 +395,7 @@ void calculateSpatialTranslation(
  * @param popID ID of the accelerated particle species.
 */
 
-uint getAccelerationSubcycles(SpatialCell* spatial_cell, Real dt, const uint popID)
+uint getAccelerationSubcycles(const SpatialCell* spatial_cell, const Real dt, const uint popID)
 {
    return max( convert<uint>(ceil(dt / spatial_cell->get_max_v_dt(popID))), 1u);
 }
@@ -437,7 +435,7 @@ void calculateAcceleration(const uint popID,const uint globalMaxSubcycles,const 
          Compute subcycle dt. The length is maxVdt on all steps
          except the (possible) last one. This was to keep neighboring
          spatial cells in sync (with respect to gyration), so that
-         two neighboring cells with different number of subcycles 
+         two neighboring cells with different number of subcycles
          have similar gyration angles, but adjusting the length of the
          last step so all are accelerated for the same amount of time.
          This keeps spatial block neighbors as much in sync as possible
@@ -481,7 +479,7 @@ void calculateAcceleration(const uint popID,const uint globalMaxSubcycles,const 
  * @param mpiGrid Parallel grid library.
  * @param dt Time step.*/
 void calculateAcceleration(dccrg::Dccrg<SpatialCell,dccrg::Cartesian_Geometry>& mpiGrid,
-                           Real dt
+                           const Real dt
                           ) {
    typedef Parameters P;
    const vector<CellID>& cells = getLocalCells();
