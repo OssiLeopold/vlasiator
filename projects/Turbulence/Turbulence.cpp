@@ -233,7 +233,8 @@ void Turbulence::setProjectBField(fsgrids::perbspan perb, fsgrids::bgbspan bgb,
          for (int j = 0; j < localSize[1]; ++j) {
             for (int k = 0; k < localSize[2]; ++k) {
                const std::array<Real, 3> x = fsgrid.getPhysicalCoords(i, j, k);
-               std::array<Real, fsgrids::bfield::N_BFIELD>* cell = bgb.get(i, j, k);
+               auto stencil = fsgfrid::FsStencil(i, j, k);
+               auto &cell = perb[stencil.ooo];
 
                Real Bx = 0.0, By = 0.0, Bz = 0.0;
 
@@ -246,9 +247,9 @@ void Turbulence::setProjectBField(fsgrids::perbspan perb, fsgrids::bgbspan bgb,
                    Bz += 0;
                }
 
-               cell->at(fsgrids::bfield::PERBX) = Bx;
-               cell->at(fsgrids::bfield::PERBY) = By;
-               cell->at(fsgrids::bfield::PERBZ) = Bz;
+               cell[fsgrids::bfield::PERBX] = Bx;
+               cell[fsgrids::bfield::PERBY] = By;
+               cell[fsgrids::bfield::PERBZ] = Bz;
             }
          }
       }
