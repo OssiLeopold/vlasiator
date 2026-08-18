@@ -233,7 +233,7 @@ void Turbulence::setProjectBField(fsgrids::perbspan perb, fsgrids::bgbspan bgb,
          for (int j = 0; j < localSize[1]; ++j) {
             for (int k = 0; k < localSize[2]; ++k) {
                const std::array<Real, 3> x = fsgrid.getPhysicalCoords(i, j, k);
-               std::array<Real, fsgrids::bfield::N_BFIELD>* cell = perb.get(i, j, k);
+               std::array<Real, fsgrids::bfield::N_BFIELD>* cell = bgb.get(i, j, k);
 
                Real Bx = 0.0, By = 0.0, Bz = 0.0;
 
