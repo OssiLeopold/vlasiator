@@ -225,10 +225,10 @@ void Turbulence::setProjectBField(fsgrids::perbspan perb, fsgrids::bgbspan bgb,
    // Set background field
    ConstantField bgField;
    bgField.initialize(0.0, 0.0, B); // Background field according to angle
-   setBackgroundField(bgField, BgBGrid);
+   setBackgroundField(bgField, bgb, technical, fsgrid);
 
    if (!P::isRestart) {
-      auto localSize = perBGrid.getLocalSize().data();
+      auto localSize = perb.getLocalSize().data();
 
    creal mu0 = physicalconstants::MU_0;
 
