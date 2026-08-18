@@ -233,7 +233,7 @@ void Turbulence::setProjectBField(fsgrids::perbspan perb, fsgrids::bgbspan bgb,
          for (int j = 0; j < localSize[1]; ++j) {
             for (int k = 0; k < localSize[2]; ++k) {
                const std::array<Real, 3> x = fsgrid.getPhysicalCoords(i, j, k);
-               auto stencil = fsgrid::FsStencil::makeStencil(i, j, k);
+               auto stencil = fsgrid::grid::makeStencil(i, j, k);
                auto &cell = perb[stencil.ooo];
 
                Real Bx = 0.0, By = 0.0, Bz = 0.0;
