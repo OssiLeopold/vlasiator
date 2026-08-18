@@ -228,7 +228,7 @@ void Turbulence::setProjectBField(fsgrids::perbspan perb, fsgrids::bgbspan bgb,
    setBackgroundField(bgField, bgb, technical, fsgrid);
 
    if (!P::isRestart) {
-      auto localSize = perb.getLocalSize().data();
+      auto localSize = fsgrid.getLocalSize().data();
 
    creal mu0 = physicalconstants::MU_0;
 
