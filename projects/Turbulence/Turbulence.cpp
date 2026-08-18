@@ -216,9 +216,12 @@ Realf Turbulence::fillPhaseSpace(spatial_cell::SpatialCell *cell,
       return rhosum;
    }
 
-void Turbulence::setProjectBField(FsGrid<std::array<Real, fsgrids::bfield::N_BFIELD>, FS_STENCIL_WIDTH>& perBGrid,
-                                    FsGrid<std::array<Real, fsgrids::bgbfield::N_BGB>, FS_STENCIL_WIDTH>& BgBGrid,
-                                    FsGrid<fsgrids::technical, FS_STENCIL_WIDTH>& technicalGrid) {
+//FsGrid<std::array<Real, fsgrids::bfield::N_BFIELD>, FS_STENCIL_WIDTH>& perBGrid,
+//                                    FsGrid<std::array<Real, fsgrids::bgbfield::N_BGB>, FS_STENCIL_WIDTH>& BgBGrid,
+//                                    FsGrid<fsgrids::technical, FS_STENCIL_WIDTH>& technicalGrid
+
+void Turbulence::setProjectBField(fsgrids::perbspan perb, fsgrids::bgbspan bgb,
+                                 fsgrids::technicalspan technical, FieldSolverGrid &fsgrid) {
    // Set background field
    ConstantField bgField;
    bgField.initialize(0.0, 0.0, B); // Background field according to angle
