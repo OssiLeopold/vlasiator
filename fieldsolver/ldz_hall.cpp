@@ -1045,7 +1045,7 @@ void calculateEdgeHallTermComponents(fsgrids::perbspan perbs,
    }
 }
 
-void filterHallTerm(fsgrids::ehallspan &ehalls,
+void filterHallTerm(fsgrids::ehallspan ehalls,
                     fsgrids::consttechnicalspan technical,
                     FieldSolverGrid &fsgrid) {
    int myRank;
@@ -1115,7 +1115,7 @@ void filterHallTerm(fsgrids::ehallspan &ehalls,
 
                double ksquared = kx*kx + ky*ky + kz*kz;
 
-               if(ksquared < std::pow(10,-9)) {
+               if(ksquared < std::pow(10,-12)) {
                   complex_buffer(i,j,k)[0] = complex_buffer(i,j,k)[0];
                   complex_buffer(i,j,k)[1] = complex_buffer(i,j,k)[1];
                } else {
@@ -1227,7 +1227,7 @@ void filterHallTerm(fsgrids::ehallspan &ehalls,
 
                double ksquared = kx*kx + ky*ky + kz*kz;
 
-               if(ksquared < std::pow(10,-9)) {
+               if(ksquared < std::pow(10,-12)) {
                   complex_buffer(i,j,k)[0] = complex_buffer(i,j,k)[0];
                   complex_buffer(i,j,k)[1] = complex_buffer(i,j,k)[1];
                } else {
@@ -1339,7 +1339,7 @@ void filterHallTerm(fsgrids::ehallspan &ehalls,
 
                double ksquared = kx*kx + ky*ky + kz*kz;
 
-               if(ksquared < std::pow(10,-9)) {
+               if(ksquared < std::pow(10,-12)) {
                   complex_buffer(i,j,k)[0] = complex_buffer(i,j,k)[0];
                   complex_buffer(i,j,k)[1] = complex_buffer(i,j,k)[1];
                } else {
