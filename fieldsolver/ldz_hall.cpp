@@ -1511,7 +1511,7 @@ void calculateHallTermSimple(fsgrids::perbspan perb,
                           calculateHallTerm(perb, ehall, moments, dperb, bgb, technical, fsgrid, stencil, sysBoundaries, coordinates.physicalGridSpacing);
                        });
 
-   //filterHallTerm(ehall, technical, fsgrid);
+   filterHallTerm(ehall, technical, fsgrid);
 
    hallTimer.stop(numCells, "Spatial Cells");
 }
