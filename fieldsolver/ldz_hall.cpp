@@ -872,7 +872,7 @@ void calculateEdgeHallTermComponents(fsgrids::perbspan perbs,
                                      fsgrids::constbgbspan bgbs,
                                      fsgrids::consttechnicalspan technical, FieldSolverGrid &fsgrid, const fsgrid::FsStencil &stencil,
                                      const std::array<Real, 3>& gridSpacing,
-                                     const std::array<Real, Rec::N_REC_COEFFICIENTS>& perturbedCoefficients,) {
+                                     const std::array<Real, Rec::N_REC_COEFFICIENTS>& perturbedCoefficients) {
    const auto ooo = stencil.ooo();
    const auto& bgb = bgbs[ooo];
    const auto& perb = perbs[ooo];
