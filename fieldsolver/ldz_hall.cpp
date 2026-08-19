@@ -1038,7 +1038,7 @@ void calculateEdgeHallTermComponents(fsgrids::perbspan perbs,
             ehall[fsgrids::ehall::EXHALL_011_111] = val;
          });
 
-      const Real EYHall = (Bx * (ydx - xdy) - Bz * (zdy - ydz)) * invHallRhoqMU0;
+      /*const Real EYHall = (Bx * (ydx - xdy) - Bz * (zdy - ydz)) * invHallRhoqMU0;
 
       fsgrid.parallel_for(
          [](int timerId) -> phiprof::Timer { return phiprof::Timer{timerId}; },
@@ -1266,7 +1266,7 @@ void calculateEdgeHallTermComponents(fsgrids::perbspan perbs,
             ehall[fsgrids::ehall::EZHALL_100_101] = val;
             ehall[fsgrids::ehall::EZHALL_110_111] = val;
             ehall[fsgrids::ehall::EZHALL_010_011] = val;
-         });
+         });*/
 
       break;
    }
