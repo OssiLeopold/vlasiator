@@ -1180,7 +1180,7 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
       cuint sysBoundaryLayer
       ) {
          const std::array<fsgrid::FsSize_t, 3> globalIndices = coordinates.localToGlobal(stencil.i, stencil.j, stencil.k);
-         EHallComponent_global(globalIndices[0], globalIndices[1], globalIndices[2]) = ehalls[stencil.ooo()][fsgrids::ehall::EYHALL_000_100];
+         EHallComponent_global(globalIndices[0], globalIndices[1], globalIndices[2]) = ehalls[stencil.ooo()][fsgrids::ehall::EYHALL_000_010];
       });
 
    if (myRank == MASTER_RANK) {
@@ -1292,7 +1292,7 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
       cuint sysBoundaryLayer
       ) {
          const std::array<fsgrid::FsSize_t, 3> globalIndices = coordinates.localToGlobal(stencil.i, stencil.j, stencil.k);
-         EHallComponent_global(globalIndices[0], globalIndices[1], globalIndices[2]) = ehalls[stencil.ooo()][EZHALL_000_010];
+         EHallComponent_global(globalIndices[0], globalIndices[1], globalIndices[2]) = ehalls[stencil.ooo()][fsgrids::ehall::EZHALL_000_001];
       });
 
    if (myRank == MASTER_RANK) {
