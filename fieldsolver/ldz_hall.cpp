@@ -1045,7 +1045,7 @@ void calculateEdgeHallTermComponents(fsgrids::perbspan perbs,
    }
 }
 
-void filterHallTerm(fsgrids::ehallspan ehalls,
+void filterHallTerm(&fsgrids::ehallspan ehalls,
                     fsgrids::consttechnicalspan technical,
                     FieldSolverGrid &fsgrid) {
    int myRank;
