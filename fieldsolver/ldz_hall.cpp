@@ -1012,20 +1012,8 @@ void calculateEdgeHallTermComponents(fsgrids::perbspan perbs,
          }
       }
 
-#ifdef DEBUG_FSOLVER
-      // In debug mode we want to unconditionally print this message
-#else
-      // In production mode we only want to print it if things are going sideways
-      if (max_imag_mag > 1e-10 * max_real_mag)
-#endif
-      {
-         fprintf(stderr, "reverse FFT ended up with a phi of real magnitude %e and an imaginary amplitude %e\n", max_real_mag, max_imag_mag);
-      }
-
-      fftw_destroy_plan(fwd_plan);
-      fftw_destroy_plan(rwd_plan);
-
-   }
+   fftw_destroy_plan(fwd_plan);
+   fftw_destroy_plan(rwd_plan);
 
    // Use MPI_Broadcast from MASTER_RANK to update everyone on the value of phi
    MPI_Bcast(&EHallComponent_filtered.data[0], globalSize[0]*globalSize[1]*globalSize[2], MPI_DOUBLE, MASTER_RANK, MPI_COMM_WORLD);
@@ -1139,28 +1127,14 @@ void calculateEdgeHallTermComponents(fsgrids::perbspan perbs,
          }
       }
 
-#ifdef DEBUG_FSOLVER
-      // In debug mode we want to unconditionally print this message
-#else
-      // In production mode we only want to print it if things are going sideways
-      if (max_imag_mag > 1e-10 * max_real_mag)
-#endif
-      {
-         fprintf(stderr, "reverse FFT ended up with a phi of real magnitude %e and an imaginary amplitude %e\n", max_real_mag, max_imag_mag);
-      }
+   fftw_destroy_plan(fwd_plan);
+   fftw_destroy_plan(rwd_plan);
 
-      fftw_destroy_plan(fwd_plan);
-      fftw_destroy_plan(rwd_plan);
-
-   }
-
-   // Use MPI_Broadcast from MASTER_RANK to update everyone on the value of phi
    MPI_Bcast(&EHallComponent_filtered.data[0], globalSize[0]*globalSize[1]*globalSize[2], MPI_DOUBLE, MASTER_RANK, MPI_COMM_WORLD);
 
-   // Distribute local values of Phi
    fsgrid.serial_for(
       [](int timerId) -> phiprof::Timer { return phiprof::Timer{timerId}; },
-      phiprof::initializeTimer("set local values of Phi"),
+      phiprof::initializeTimer("set new E hall y filtered components"),
       technical,
 
       [&ehall,&EHallComponent_filtered,myRank]
@@ -1178,13 +1152,11 @@ void calculateEdgeHallTermComponents(fsgrids::perbspan perbs,
          ehall[fsgrids::ehall::EYHALL_001_011] = val;
       });
 
-
-
       const Real EZHall = (By * (zdy - ydz) - Bx * (xdz - zdx)) * invHallRhoqMU0;
 
       fsgrid.parallel_for(
          [](int timerId) -> phiprof::Timer { return phiprof::Timer{timerId}; },
-         phiprof::initializeTimer("Collect Hall term x components"),
+         phiprof::initializeTimer("Collect Hall term y components"),
          technical,
 
          [&EHallComponent_global, EZHall]
@@ -1268,20 +1240,8 @@ void calculateEdgeHallTermComponents(fsgrids::perbspan perbs,
          }
       }
 
-#ifdef DEBUG_FSOLVER
-      // In debug mode we want to unconditionally print this message
-#else
-      // In production mode we only want to print it if things are going sideways
-      if (max_imag_mag > 1e-10 * max_real_mag)
-#endif
-      {
-         fprintf(stderr, "reverse FFT ended up with a phi of real magnitude %e and an imaginary amplitude %e\n", max_real_mag, max_imag_mag);
-      }
-
-      fftw_destroy_plan(fwd_plan);
-      fftw_destroy_plan(rwd_plan);
-
-   }
+   fftw_destroy_plan(fwd_plan);
+   fftw_destroy_plan(rwd_plan);
 
    // Use MPI_Broadcast from MASTER_RANK to update everyone on the value of phi
    MPI_Bcast(&EHallComponent_filtered.data[0], globalSize[0]*globalSize[1]*globalSize[2], MPI_DOUBLE, MASTER_RANK, MPI_COMM_WORLD);
