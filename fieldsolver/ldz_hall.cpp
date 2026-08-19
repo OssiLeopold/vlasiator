@@ -1153,7 +1153,7 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
       phiprof::initializeTimer("set local values of Phi"),
       technical,
 
-      [&ehall,&EHallComponent_filtered,myRank]
+      [&ehalls,&EHallComponent_filtered,myRank]
       (const fsgrid::Coordinates &coordinates,
       const fsgrid::FsStencil& stencil,
       cuint sysBoundaryFlag,
@@ -1265,7 +1265,7 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
       phiprof::initializeTimer("set new E hall y filtered components"),
       technical,
 
-      [&ehall,&EHallComponent_filtered,myRank]
+      [&ehalls,&EHallComponent_filtered,myRank]
       (const fsgrid::Coordinates &coordinates,
       const fsgrid::FsStencil& stencil,
       cuint sysBoundaryFlag,
@@ -1285,7 +1285,7 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
       phiprof::initializeTimer("Collect Hall term y components"),
       technical,
 
-      [&EHallComponent_global, EZHall]
+      [&EHallComponent_global, ehalls]
       (const fsgrid::Coordinates &coordinates,
       const fsgrid::FsStencil& stencil,
       cuint sysBoundaryFlag,
@@ -1379,7 +1379,7 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
       phiprof::initializeTimer("set local values of Phi"),
       technical,
 
-      [&ehall,&EHallComponent_filtered,myRank]
+      [&ehalls,&EHallComponent_filtered,myRank]
       (const fsgrid::Coordinates &coordinates,
       const fsgrid::FsStencil& stencil,
       cuint sysBoundaryFlag,
