@@ -915,6 +915,142 @@ void calculateEdgeHallTermComponents(fsgrids::perbspan perbs,
       const Real ydz = (bgb[fsgrids::bgbfield::dBGBydz] + dperb[fsgrids::dperb::dPERBydz]) / gridSpacing[2];
 
       const Real EXHall = (Bz * (xdz - zdx) - By * (ydx - xdy)) * invHallRhoqMU0;
+
+      int myRank;
+      MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
+
+      const std::array<fsgrid::FsSize_t, 3> &globalSize = fsgrid.getGlobalSize();
+
+      Array3D EXHall_global(globalSize[0], globalSize[1], globalSize[2]);
+      Array3D EXHall_filtered(globalSize[0], globalSize[1], globalSize[2]);
+
+      fsgrid.parallel_for(
+         [](int timerId) -> phiprof::Timer { return phiprof::Timer{timerId}; },
+         phiprof::initializeTimer("Collect Hall term x components"),
+         technical,
+
+         [&EXHall_global]
+         (const fsgrid::Coordinates &coordinates,
+         const fsgrid::FsStencil& stencil,
+         cuint sysBoundaryFlag,
+         cuint sysBoundaryLayer
+         ) {
+            const std::array<fsgrid::FsSize_t, 3> globalIndices = coordinates.localToGlobal(stencil.i, stencil.j, stencil.k);
+            EXHall_global(globalIndices[0], globalIndices[1], globalIndices[2]) = EXHall;
+         });
+
+      if (myRank == MASTER_RANK) {
+         MPI_Reduce(MPI_IN_PLACE, &EXHall_global.data[0], globalSize[0]*globalSize[1]*globalSize[2], MPI_DOUBLE, MPI_SUM, MASTER_RANK, MPI_COMM_WORLD);
+      }
+      else {
+         MPI_Reduce(&EXHall_global.data[0], nullptr, globalSize[0]*globalSize[1]*globalSize[2], MPI_DOUBLE, MPI_SUM, MASTER_RANK, MPI_COMM_WORLD);
+      }
+
+      if (myRank == MASTER_RANK){
+
+         ComplexArray3D complex_buffer(globalSize[0],globalSize[1],globalSize[2]);
+
+         auto base_addr  = &complex_buffer.data[0];
+         fftw_plan fwd_plan = fftw_plan_dft_3d(globalSize[0],globalSize[1],globalSize[2], base_addr, base_addr, FFTW_FORWARD, FFTW_ESTIMATE);
+         fftw_plan rwd_plan = fftw_plan_dft_3d(globalSize[0],globalSize[1],globalSize[2], base_addr, base_addr, FFTW_BACKWARD, FFTW_ESTIMATE);
+
+         for (unsigned int i = 0; i < globalSize[0]; ++i) {
+            for (unsigned int j = 0; j < globalSize[1]; ++j) {
+               for (unsigned int k = 0; k < globalSize[2]; ++k) {
+                  complex_buffer(i,j,k)[0] = EXHall_global(i,j,k);
+                  complex_buffer(i,j,k)[1] = 0.0;
+               }
+            }
+         }
+
+         // Execute the FTT
+      fftw_execute(fwd_plan);
+
+      // Perform point by point operation in k-space
+      const auto dxyz = fsgrid.getGridSpacing();
+      for (unsigned int i = 0; i < globalSize[0]; ++i) {
+         double kx = i / double(globalSize[0]);
+                kx = kx <= 0.5 ? kx : kx-1.;
+                kx *= 2. * M_PI / dxyz[0];
+         for (unsigned int j = 0; j < globalSize[1]; ++j) {
+            double ky = j / double(globalSize[1]);
+                   ky = ky <= 0.5 ? ky : ky-1.;
+                   ky *= 2. * M_PI / dxyz[1];
+            for (unsigned int k = 0; k < globalSize[2]; ++k) {
+               double kz = k / double(globalSize[2]);
+                      kz = kz <= 0.5 ? kz : kz-1.;
+                      kz *= 2. * M_PI / dxyz[2];
+
+               double ksquared = kx*kx + ky*ky + kz*kz;
+
+               if(ksquared < 1.92*std::pow(10,-8)) {
+                  complex_buffer(i,j,k)[0] = complex_buffer(i,j,k)[0] / (physicalconstants::EPS_0 * ksquared);
+                  complex_buffer(i,j,k)[1] = complex_buffer(i,j,k)[1] / (physicalconstants::EPS_0 * ksquared);
+               } else {
+                  complex_buffer(i,j,k)[0] = 0.;
+                  complex_buffer(i,j,k)[1] = 0.;
+               }
+            }
+         }
+      }
+
+      // Perform inverse FFT on rho_complex
+      fftw_execute(rwd_plan);
+
+      // Copy out the real part of complex_buffer, which holds phi at that point
+      double max_real_mag = 0.;
+      double max_imag_mag = 0.;
+      for (unsigned int i = 0; i < globalSize[0]; ++i) {
+         for (unsigned int j = 0; j < globalSize[1]; ++j) {
+            for (unsigned int k = 0; k < globalSize[2]; ++k) {
+               max_real_mag = std::max(max_real_mag, std::abs(complex_buffer(i,j,k)[0]));
+               max_imag_mag = std::max(max_imag_mag, std::abs(complex_buffer(i,j,k)[1]));
+               EXHall_filtered(i,j,k) = complex_buffer(i,j,k)[0] / double(globalSize[0]*globalSize[1]*globalSize[2]); // Division comes from unnormalized nature of the FFTW transformations
+            }
+         }
+      }
+
+#ifdef DEBUG_FSOLVER
+      // In debug mode we want to unconditionally print this message
+#else
+      // In production mode we only want to print it if things are going sideways
+      if (max_imag_mag > 1e-10 * max_real_mag)
+#endif
+      {
+         fprintf(stderr, "reverse FFT ended up with a phi of real magnitude %e and an imaginary amplitude %e\n", max_real_mag, max_imag_mag);
+      }
+
+      fftw_destroy_plan(fwd_plan);
+      fftw_destroy_plan(rwd_plan);
+
+   }
+
+   // Use MPI_Broadcast from MASTER_RANK to update everyone on the value of phi
+   MPI_Bcast(&EXHall_filtered.data[0], globalSize[0]*globalSize[1]*globalSize[2], MPI_DOUBLE, MASTER_RANK, MPI_COMM_WORLD);
+
+   // Distribute local values of Phi
+   fsgrid.serial_for(
+      [](int timerId) -> phiprof::Timer { return phiprof::Timer{timerId}; },
+      phiprof::initializeTimer("set local values of Phi"),
+      technical,
+
+      [&EHallGrid,&EXHall_filtered,myRank]
+      (const fsgrid::Coordinates &coordinates,
+       const fsgrid::FsStencil& stencil,
+       cuint sysBoundaryFlag,
+       cuint sysBoundaryLayer
+      ) {
+         const std::array<fsgrid::FsSize_t, 3> globalIndices = coordinates.localToGlobal(stencil.i, stencil.j, stencil.k);
+         const Real val = EXHall_filtered(globalIndices[0], globalIndices[1], globalIndices[2]);
+         
+         ehall[fsgrids::ehall::EXHALL_000_100] = val;
+         ehall[fsgrids::ehall::EXHALL_010_110] = val;
+         ehall[fsgrids::ehall::EXHALL_001_101] = val;
+         ehall[fsgrids::ehall::EXHALL_011_111] = val;
+      });
+
+      fsgrid.updateGhostCells(EHallGrid);
+
       ehall[fsgrids::ehall::EXHALL_000_100] = EXHall;
       ehall[fsgrids::ehall::EXHALL_010_110] = EXHall;
       ehall[fsgrids::ehall::EXHALL_001_101] = EXHall;
