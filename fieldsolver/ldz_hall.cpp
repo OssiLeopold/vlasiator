@@ -1116,8 +1116,8 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
                double ksquared = kx*kx + ky*ky + kz*kz;
 
                if(ksquared < 1.92*std::pow(10,-8)) {
-                  complex_buffer(i,j,k)[0] = complex_buffer(i,j,k)[0] / (physicalconstants::EPS_0 * ksquared);
-                  complex_buffer(i,j,k)[1] = complex_buffer(i,j,k)[1] / (physicalconstants::EPS_0 * ksquared);
+                  complex_buffer(i,j,k)[0] = complex_buffer(i,j,k)[0];
+                  complex_buffer(i,j,k)[1] = complex_buffer(i,j,k)[1];
                } else {
                   complex_buffer(i,j,k)[0] = 0.;
                   complex_buffer(i,j,k)[1] = 0.;
@@ -1228,8 +1228,8 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
                double ksquared = kx*kx + ky*ky + kz*kz;
 
                if(ksquared < 1.92*std::pow(10,-8)) {
-                  complex_buffer(i,j,k)[0] = complex_buffer(i,j,k)[0] / (physicalconstants::EPS_0 * ksquared);
-                  complex_buffer(i,j,k)[1] = complex_buffer(i,j,k)[1] / (physicalconstants::EPS_0 * ksquared);
+                  complex_buffer(i,j,k)[0] = complex_buffer(i,j,k)[0];
+                  complex_buffer(i,j,k)[1] = complex_buffer(i,j,k)[1];
                } else {
                   complex_buffer(i,j,k)[0] = 0.;
                   complex_buffer(i,j,k)[1] = 0.;
@@ -1340,8 +1340,8 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
                double ksquared = kx*kx + ky*ky + kz*kz;
 
                if(ksquared < 1.92*std::pow(10,-8)) {
-                  complex_buffer(i,j,k)[0] = complex_buffer(i,j,k)[0] / (physicalconstants::EPS_0 * ksquared);
-                  complex_buffer(i,j,k)[1] = complex_buffer(i,j,k)[1] / (physicalconstants::EPS_0 * ksquared);
+                  complex_buffer(i,j,k)[0] = complex_buffer(i,j,k)[0];
+                  complex_buffer(i,j,k)[1] = complex_buffer(i,j,k)[1];
                } else {
                   complex_buffer(i,j,k)[0] = 0.;
                   complex_buffer(i,j,k)[1] = 0.;
