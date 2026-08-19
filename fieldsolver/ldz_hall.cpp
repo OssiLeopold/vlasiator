@@ -870,6 +870,7 @@ void calculateEdgeHallTermComponents(fsgrids::perbspan perbs,
                                      fsgrids::constbgbspan bgbs,
                                      const std::array<Real, 3>& gridSpacing,
                                      const std::array<Real, Rec::N_REC_COEFFICIENTS>& perturbedCoefficients,
+                                     FieldSolverGrid &fsgrid,
                                      const fsgrid::FsStencil& stencil) {
    const auto ooo = stencil.ooo();
    const auto& bgb = bgbs[ooo];
@@ -1198,7 +1199,7 @@ void calculateHallTerm(fsgrids::perbspan perb,
                        fsgrids::constmomentsspan moments,
                        fsgrids::constdperbspan dperb,
                        fsgrids::constbgbspan bgb,
-                       fsgrids::consttechnicalspan technical, const fsgrid::FsStencil& stencil,
+                       fsgrids::consttechnicalspan technical, FieldSolverGrid &fsgrid, const fsgrid::FsStencil& stencil,
                        SysBoundary& sysBoundaries, const std::array<Real, 3>& gridSpacing) {
 #ifdef DEBUG_FSOLVER
    if (!stencil.cellExists(0, 0, 0)) {
@@ -1227,7 +1228,7 @@ void calculateHallTerm(fsgrids::perbspan perb,
       sb->fieldSolverBoundaryCondHallElectricField(ehall, stencil, 1);
       sb->fieldSolverBoundaryCondHallElectricField(ehall, stencil, 2);
    } else {
-      calculateEdgeHallTermComponents(perb, ehall, moments, dperb, bgb, gridSpacing, perturbedCoefficients, stencil);
+      calculateEdgeHallTermComponents(perb, ehall, moments, dperb, bgb, gridSpacing, perturbedCoefficients, fsgrid, stencil);
    }
 }
 
@@ -1285,7 +1286,7 @@ void calculateHallTermSimple(fsgrids::perbspan perb,
    fsgrid.parallel_for([](int timerId) -> phiprof::Timer { return phiprof::Timer{timerId}; },
                        phiprof::initializeTimer("EHall compute cells"), technical,
                        [=, &sysBoundaries](const fsgrid::Coordinates &coordinates, const fsgrid::FsStencil& stencil, cuint sysBoundaryFlag, cuint sysBoundaryLayer) {
-                          calculateHallTerm(perb, ehall, moments, dperb, bgb, technical, stencil, sysBoundaries, coordinates.physicalGridSpacing);
+                          calculateHallTerm(perb, ehall, moments, dperb, bgb, technical, fsgrid, stencil, sysBoundaries, coordinates.physicalGridSpacing);
                        });
 
    hallTimer.stop(numCells, "Spatial Cells");
