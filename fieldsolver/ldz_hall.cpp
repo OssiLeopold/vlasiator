@@ -1198,7 +1198,7 @@ void calculateHallTerm(fsgrids::perbspan perb,
                        fsgrids::constmomentsspan moments,
                        fsgrids::constdperbspan dperb,
                        fsgrids::constbgbspan bgb,
-                       fsgrids::consttechnicalspan technical, const FieldSolverGrid &fsgrid, const fsgrid::FsStencil& stencil,
+                       fsgrids::consttechnicalspan technical, FieldSolverGrid &fsgrid, const fsgrid::FsStencil& stencil,
                        SysBoundary& sysBoundaries, const std::array<Real, 3>& gridSpacing) {
 #ifdef DEBUG_FSOLVER
    if (!stencil.cellExists(0, 0, 0)) {
