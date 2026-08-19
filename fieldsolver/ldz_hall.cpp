@@ -870,7 +870,7 @@ void calculateEdgeHallTermComponents(fsgrids::perbspan perbs,
                                      fsgrids::constmomentsspan moments,
                                      fsgrids::constdperbspan dperbs,
                                      fsgrids::constbgbspan bgbs,
-                                     fsgrids::consttechnicalspan technical, FieldSolverGrid &fsgrid, const fsgrid::FsStencil &stencil,
+                                     fsgrids::consttechnicalspan technical, const FieldSolverGrid &fsgrid, const fsgrid::FsStencil &stencil,
                                      const std::array<Real, 3>& gridSpacing,
                                      const std::array<Real, Rec::N_REC_COEFFICIENTS>& perturbedCoefficients) {
    const auto ooo = stencil.ooo();
@@ -1198,7 +1198,7 @@ void calculateHallTerm(fsgrids::perbspan perb,
                        fsgrids::constmomentsspan moments,
                        fsgrids::constdperbspan dperb,
                        fsgrids::constbgbspan bgb,
-                       fsgrids::consttechnicalspan technical, FieldSolverGrid &fsgrid, const fsgrid::FsStencil& stencil,
+                       fsgrids::consttechnicalspan technical, const FieldSolverGrid &fsgrid, const fsgrid::FsStencil& stencil,
                        SysBoundary& sysBoundaries, const std::array<Real, 3>& gridSpacing) {
 #ifdef DEBUG_FSOLVER
    if (!stencil.cellExists(0, 0, 0)) {
