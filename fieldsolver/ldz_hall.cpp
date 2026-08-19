@@ -870,10 +870,9 @@ void calculateEdgeHallTermComponents(fsgrids::perbspan perbs,
                                      fsgrids::constmomentsspan moments,
                                      fsgrids::constdperbspan dperbs,
                                      fsgrids::constbgbspan bgbs,
+                                     fsgrids::consttechnicalspan technical, FieldSolverGrid &fsgrid, const fsgrid::FsStencil &stencil,
                                      const std::array<Real, 3>& gridSpacing,
-                                     const std::array<Real, Rec::N_REC_COEFFICIENTS>& perturbedCoefficients,
-                                     FieldSolverGrid &fsgrid,
-                                     const fsgrid::FsStencil& stencil) {
+                                     const std::array<Real, Rec::N_REC_COEFFICIENTS>& perturbedCoefficients,) {
    const auto ooo = stencil.ooo();
    const auto& bgb = bgbs[ooo];
    const auto& perb = perbs[ooo];
@@ -1230,7 +1229,7 @@ void calculateHallTerm(fsgrids::perbspan perb,
       sb->fieldSolverBoundaryCondHallElectricField(ehall, stencil, 1);
       sb->fieldSolverBoundaryCondHallElectricField(ehall, stencil, 2);
    } else {
-      calculateEdgeHallTermComponents(perb, ehall, moments, dperb, bgb, gridSpacing, perturbedCoefficients, fsgrid, stencil);
+      calculateEdgeHallTermComponents(perb, ehall, moments, dperb, bgb, technical, fsgrid, stencil, gridSpacing, perturbedCoefficients);
    }
 }
 
