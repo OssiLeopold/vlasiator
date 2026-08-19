@@ -57,7 +57,7 @@ private:
 public:
    Wavespeeds(Real bmag2, Real rhom, Real p11, Real p22, Real p33, const std::array<Real, 3>& gridSpacing)
        : alfvenSq(divideIfNonZero(bmag2, pc::MU_0 * rhom)), soundSq(divideIfNonZero(p11 + p22 + p33, 2.0 * rhom)),
-         whistler(Parameters::ohmHallTerm > 0 ?
+         whistler(Parameters::ohmHallTerm < 0 ?
                      sqrt(alfvenSq) * (1 + divideIfNonZero(2*M_PI*M_PI*pc::MASS_PROTON*pc::MASS_PROTON, gridSpacing[0]*gridSpacing[0]*rhom*pc::CHARGE*pc::CHARGE*pc::MU_0)
                                 / sqrt(1 + divideIfNonZero(  M_PI*M_PI*pc::MASS_PROTON*pc::MASS_PROTON, gridSpacing[0]*gridSpacing[0]*rhom*pc::CHARGE*pc::CHARGE*pc::MU_0)))
                   : 0.0) {}
