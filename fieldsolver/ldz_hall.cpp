@@ -1036,7 +1036,7 @@ void calculateEdgeHallTermComponents(fsgrids::perbspan perbs,
       phiprof::initializeTimer("set local values of Phi"),
       technical,
 
-      [&EHallGrid,&EXHall_filtered,myRank]
+      [&ehall,&EXHall_filtered,myRank]
       (const fsgrid::Coordinates &coordinates,
        const fsgrid::FsStencil& stencil,
        cuint sysBoundaryFlag,
