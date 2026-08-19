@@ -931,7 +931,7 @@ void calculateEdgeHallTermComponents(fsgrids::perbspan perbs,
          phiprof::initializeTimer("Collect Hall term x components"),
          technical,
 
-         [&EXHall_global]
+         [&EXHall_global, EXHall]
          (const fsgrid::Coordinates &coordinates,
          const fsgrid::FsStencil& stencil,
          cuint sysBoundaryFlag,
