@@ -1323,6 +1323,7 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
       fftw_execute(fwd_plan);
 
    // Perform point by point operation in k-space
+      bool triggered = false;
       const auto dxyz = fsgrid.getGridSpacing();
       for (unsigned int i = 0; i < globalSize[0]; ++i) {
          double kx = i / double(globalSize[0]);
@@ -1345,9 +1346,13 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
                } else {
                   complex_buffer(i,j,k)[0] = 0.;
                   complex_buffer(i,j,k)[1] = 0.;
+                  triggered = true;
                }
             }
          }
+      }
+      if (triggered){
+         fprintf(stderr, "0 triggered");
       }
 
    // Perform inverse FFT on rho_complex
