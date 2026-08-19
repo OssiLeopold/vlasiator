@@ -1398,6 +1398,8 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
          ehalls[stencil.ooo()][fsgrids::ehall::EZHALL_110_111] = val;
          ehalls[stencil.ooo()][fsgrids::ehall::EZHALL_010_011] = val;
       });
+
+      fsgrid.updateGhostCells(ehalls);
 }
 
 /** \brief Calculate the numerator of the Hall term on all given cells.
