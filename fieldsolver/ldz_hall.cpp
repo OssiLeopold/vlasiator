@@ -1051,8 +1051,6 @@ void calculateEdgeHallTermComponents(fsgrids::perbspan perbs,
          ehall[fsgrids::ehall::EXHALL_011_111] = val;
       });
 
-      fsgrid.updateGhostCells(ehall);
-
       ehall[fsgrids::ehall::EXHALL_000_100] = EXHall;
       ehall[fsgrids::ehall::EXHALL_010_110] = EXHall;
       ehall[fsgrids::ehall::EXHALL_001_101] = EXHall;
