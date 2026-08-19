@@ -23,6 +23,7 @@
 #include "fs_common.h"
 #include "ldz_hall.hpp"
 #include <limits>
+#include <fftw3.h>
 #include "array.hpp"
 
 #ifdef DEBUG_VLASIATOR
