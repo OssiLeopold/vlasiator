@@ -201,6 +201,7 @@ LIBS += ${LIB_PAPI}
 LIBS += ${LIB_OCTREE_COMPRESSOR}
 LIBS += ${LIB_ZFP}
 LIBS += ${LIB_NN_COMPRESSOR}
+LIBS += -lfftw3
 
 # Define common dependencies
 DEPS_COMMON = common.h common.cpp definitions.h mpiconversion.h logger.h object_wrapper.h
