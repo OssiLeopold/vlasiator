@@ -1405,7 +1405,7 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
          ehalls[stencil.ooo()][fsgrids::ehall::EZHALL_100_101] = val;
          ehalls[stencil.ooo()][fsgrids::ehall::EZHALL_110_111] = val;
          ehalls[stencil.ooo()][fsgrids::ehall::EZHALL_010_011] = val;
-      });/*
+      });*/
 
       //fsgrid.updateGhostCells(ehalls);
 }
