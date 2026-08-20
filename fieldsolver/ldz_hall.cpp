@@ -1115,7 +1115,7 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
 
                double ksquared = kx*kx + ky*ky + kz*kz;
 
-               if(true) {
+               if(std::pow(10,-4)) {
                   complex_buffer(i,j,k)[0] = complex_buffer(i,j,k)[0];
                   complex_buffer(i,j,k)[1] = complex_buffer(i,j,k)[1];
                } else {
@@ -1231,7 +1231,7 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
 
                double ksquared = kx*kx + ky*ky + kz*kz;
 
-               if(true) {
+               if(ksquared < std::pow(10,-8)) {
                   complex_buffer(i,j,k)[0] = complex_buffer(i,j,k)[0];
                   complex_buffer(i,j,k)[1] = complex_buffer(i,j,k)[1];
                } else {
