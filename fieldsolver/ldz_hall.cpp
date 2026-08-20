@@ -1140,6 +1140,10 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
          }
       }
 
+      if (max_imag_mag > 1e-10 * max_real_mag){
+         fprintf(stderr, "reverse FFT ended up with a phi of real magnitude %e and an imaginary amplitude %e\n", max_real_mag, max_imag_mag);
+      }
+
       fftw_destroy_plan(fwd_plan);
       fftw_destroy_plan(rwd_plan);
    }
@@ -1254,6 +1258,10 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
          }
       }
 
+      if (max_imag_mag > 1e-10 * max_real_mag){
+         fprintf(stderr, "reverse FFT ended up with a phi of real magnitude %e and an imaginary amplitude %e\n", max_real_mag, max_imag_mag);
+      }
+
       fftw_destroy_plan(fwd_plan);
       fftw_destroy_plan(rwd_plan);
    }
@@ -1323,7 +1331,6 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
       fftw_execute(fwd_plan);
 
    // Perform point by point operation in k-space
-      bool triggered = false;
       const auto dxyz = fsgrid.getGridSpacing();
       for (unsigned int i = 0; i < globalSize[0]; ++i) {
          double kx = i / double(globalSize[0]);
@@ -1346,13 +1353,9 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
                } else {
                   complex_buffer(i,j,k)[0] = 0.;
                   complex_buffer(i,j,k)[1] = 0.;
-                  triggered = true;
                }
             }
          }
-      }
-      if (triggered){
-         fprintf(stderr, "0 triggered");
       }
 
    // Perform inverse FFT on rho_complex
@@ -1369,6 +1372,10 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
                EHallComponent_filtered(i,j,k) = complex_buffer(i,j,k)[0] / double(globalSize[0]*globalSize[1]*globalSize[2]); // Division comes from unnormalized nature of the FFTW transformations
             }
          }
+      }
+
+      if (max_imag_mag > 1e-10 * max_real_mag){
+         fprintf(stderr, "reverse FFT ended up with a phi of real magnitude %e and an imaginary amplitude %e\n", max_real_mag, max_imag_mag);
       }
 
       fftw_destroy_plan(fwd_plan);
