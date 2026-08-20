@@ -870,9 +870,9 @@ void calculateEdgeHallTermComponents(fsgrids::perbspan perbs,
                                      fsgrids::constmomentsspan moments,
                                      fsgrids::constdperbspan dperbs,
                                      fsgrids::constbgbspan bgbs,
-                                     fsgrids::consttechnicalspan technical, FieldSolverGrid &fsgrid, const fsgrid::FsStencil &stencil,
                                      const std::array<Real, 3>& gridSpacing,
-                                     const std::array<Real, Rec::N_REC_COEFFICIENTS>& perturbedCoefficients) {
+                                     const std::array<Real, Rec::N_REC_COEFFICIENTS>& perturbedCoefficients,
+                                     const fsgrid::FsStencil &stencil) {
    const auto ooo = stencil.ooo();
    const auto& bgb = bgbs[ooo];
    const auto& perb = perbs[ooo];
@@ -1164,8 +1164,7 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
       cuint sysBoundaryLayer
       ) {
          const std::array<fsgrid::FsSize_t, 3> globalIndices = coordinates.localToGlobal(stencil.i, stencil.j, stencil.k);
-         //const Real val = EHallComponent_filtered(globalIndices[0], globalIndices[1], globalIndices[2]);
-         const Real val = 0;
+         const Real val = EHallComponent_filtered(globalIndices[0], globalIndices[1], globalIndices[2]);
 
          ehalls[stencil.ooo()][fsgrids::ehall::EXHALL_000_100] = val;
          ehalls[stencil.ooo()][fsgrids::ehall::EXHALL_010_110] = val;
@@ -1429,7 +1428,7 @@ void calculateHallTerm(fsgrids::perbspan perb,
                        fsgrids::constmomentsspan moments,
                        fsgrids::constdperbspan dperb,
                        fsgrids::constbgbspan bgb,
-                       fsgrids::consttechnicalspan technical, FieldSolverGrid &fsgrid, const fsgrid::FsStencil& stencil,
+                       fsgrids::consttechnicalspan technical, const fsgrid::FsStencil& stencil,
                        SysBoundary& sysBoundaries, const std::array<Real, 3>& gridSpacing) {
 #ifdef DEBUG_FSOLVER
    if (!stencil.cellExists(0, 0, 0)) {
@@ -1458,7 +1457,7 @@ void calculateHallTerm(fsgrids::perbspan perb,
       sb->fieldSolverBoundaryCondHallElectricField(ehall, stencil, 1);
       sb->fieldSolverBoundaryCondHallElectricField(ehall, stencil, 2);
    } else {
-      calculateEdgeHallTermComponents(perb, ehall, moments, dperb, bgb, technical, fsgrid, stencil, gridSpacing, perturbedCoefficients);
+      calculateEdgeHallTermComponents(perb, ehall, moments, dperb, bgb, technical, gridSpacing, perturbedCoefficients, stencil);
    }
 }
 
@@ -1515,8 +1514,8 @@ void calculateHallTermSimple(fsgrids::perbspan perb,
 
    fsgrid.parallel_for([](int timerId) -> phiprof::Timer { return phiprof::Timer{timerId}; },
                        phiprof::initializeTimer("EHall compute cells"), technical,
-                       [=, &fsgrid, &sysBoundaries](const fsgrid::Coordinates &coordinates, const fsgrid::FsStencil& stencil, cuint sysBoundaryFlag, cuint sysBoundaryLayer) {
-                          calculateHallTerm(perb, ehall, moments, dperb, bgb, technical, fsgrid, stencil, sysBoundaries, coordinates.physicalGridSpacing);
+                       [=, &sysBoundaries](const fsgrid::Coordinates &coordinates, const fsgrid::FsStencil& stencil, cuint sysBoundaryFlag, cuint sysBoundaryLayer) {
+                          calculateHallTerm(perb, ehall, moments, dperb, bgb, technical, stencil, sysBoundaries, coordinates.physicalGridSpacing);
                        });
 
    filterHallTerm(ehall, technical, fsgrid);
