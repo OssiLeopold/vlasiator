@@ -1115,7 +1115,7 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
 
                double ksquared = kx*kx + ky*ky + kz*kz;
 
-               if(ksquared < std::pow(10,-9)) {
+               if(true) {
                   complex_buffer(i,j,k)[0] = complex_buffer(i,j,k)[0];
                   complex_buffer(i,j,k)[1] = complex_buffer(i,j,k)[1];
                } else {
@@ -1227,7 +1227,7 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
 
                double ksquared = kx*kx + ky*ky + kz*kz;
 
-               if(ksquared < std::pow(10,-9)) {
+               if(true) {
                   complex_buffer(i,j,k)[0] = complex_buffer(i,j,k)[0];
                   complex_buffer(i,j,k)[1] = complex_buffer(i,j,k)[1];
                } else {
@@ -1340,7 +1340,7 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
 
                double ksquared = kx*kx + ky*ky + kz*kz;
 
-               if(ksquared < std::pow(10,-9)) {
+               if(true) {
                   complex_buffer(i,j,k)[0] = complex_buffer(i,j,k)[0];
                   complex_buffer(i,j,k)[1] = complex_buffer(i,j,k)[1];
                } else {
@@ -1511,7 +1511,7 @@ void calculateHallTermSimple(fsgrids::perbspan perb,
                           calculateHallTerm(perb, ehall, moments, dperb, bgb, technical, fsgrid, stencil, sysBoundaries, coordinates.physicalGridSpacing);
                        });
 
-   //filterHallTerm(ehall, technical, fsgrid);
+   filterHallTerm(ehall, technical, fsgrid);
 
    hallTimer.stop(numCells, "Spatial Cells");
 }
