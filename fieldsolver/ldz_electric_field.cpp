@@ -55,6 +55,7 @@ private:
    // http://iopscience.iop.org/article/10.1088/0253-6102/43/2/026/meta (Alfven waves)
    // for details.
 public:
+   long unsigned int grid_manual = 62800;
    Wavespeeds(Real bmag2, Real rhom, Real p11, Real p22, Real p33, const std::array<Real, 3>& gridSpacing)
        : alfvenSq(divideIfNonZero(bmag2, pc::MU_0 * rhom)), soundSq(divideIfNonZero(p11 + p22 + p33, 2.0 * rhom)),
          whistler(Parameters::ohmHallTerm > 0 ?

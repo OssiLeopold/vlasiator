@@ -38,7 +38,4 @@ void calculateUpwindedElectricFieldSimple(fsgrids::perbspan perb,
                                           fsgrids::technicalspan technical, FieldSolverGrid &fsgrid,
                                           SysBoundary& sysBoundaries, int32_t RKCase,
                                           const bool communicateEGradPeOrMomentsDerivatives);
-
-   long unsigned int grid_manual = 628000;
-
 #endif
