@@ -58,8 +58,8 @@ public:
    Wavespeeds(Real bmag2, Real rhom, Real p11, Real p22, Real p33, const std::array<Real, 3>& gridSpacing)
        : alfvenSq(divideIfNonZero(bmag2, pc::MU_0 * rhom)), soundSq(divideIfNonZero(p11 + p22 + p33, 2.0 * rhom)),
          whistler(Parameters::ohmHallTerm > 0 ?
-                     sqrt(alfvenSq) * (1 + divideIfNonZero(2*M_PI*M_PI*pc::MASS_PROTON*pc::MASS_PROTON, 62800*62800*rhom*pc::CHARGE*pc::CHARGE*pc::MU_0)
-                                / sqrt(1 + divideIfNonZero(  M_PI*M_PI*pc::MASS_PROTON*pc::MASS_PROTON, 62800*62800*rhom*pc::CHARGE*pc::CHARGE*pc::MU_0)))
+                     sqrt(alfvenSq) * (1 + divideIfNonZero(2*M_PI*M_PI*pc::MASS_PROTON*pc::MASS_PROTON, grid_manual*grid_manual*rhom*pc::CHARGE*pc::CHARGE*pc::MU_0)
+                                / sqrt(1 + divideIfNonZero(  M_PI*M_PI*pc::MASS_PROTON*pc::MASS_PROTON, grid_manual*grid_manual*rhom*pc::CHARGE*pc::CHARGE*pc::MU_0)))
                   : 0.0) {}
 
    Real minVelocity() const { return min(Parameters::maxWaveVelocity, sqrt(alfvenSq + soundSq) + whistler); }
