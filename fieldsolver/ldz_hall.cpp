@@ -1164,8 +1164,9 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
       cuint sysBoundaryLayer
       ) {
          const std::array<fsgrid::FsSize_t, 3> globalIndices = coordinates.localToGlobal(stencil.i, stencil.j, stencil.k);
-         const Real val = EHallComponent_filtered(globalIndices[0], globalIndices[1], globalIndices[2]);
-         
+         //const Real val = EHallComponent_filtered(globalIndices[0], globalIndices[1], globalIndices[2]);
+         const Real val = 0;
+
          ehalls[stencil.ooo()][fsgrids::ehall::EXHALL_000_100] = val;
          ehalls[stencil.ooo()][fsgrids::ehall::EXHALL_010_110] = val;
          ehalls[stencil.ooo()][fsgrids::ehall::EXHALL_001_101] = val;
@@ -1288,9 +1289,9 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
          ehalls[stencil.ooo()][fsgrids::ehall::EYHALL_001_011] = val;
       });
 
-   fsgrid.parallel_for(
+   /*fsgrid.parallel_for(
       [](int timerId) -> phiprof::Timer { return phiprof::Timer{timerId}; },
-      phiprof::initializeTimer("Collect Hall term y components"),
+      phiprof::initializeTimer("Collect Hall term z components"),
       technical,
 
       [&EHallComponent_global, ehalls]
@@ -1404,7 +1405,7 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
          ehalls[stencil.ooo()][fsgrids::ehall::EZHALL_100_101] = val;
          ehalls[stencil.ooo()][fsgrids::ehall::EZHALL_110_111] = val;
          ehalls[stencil.ooo()][fsgrids::ehall::EZHALL_010_011] = val;
-      });
+      });/*
 
       //fsgrid.updateGhostCells(ehalls);
 }
