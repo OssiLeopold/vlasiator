@@ -1515,7 +1515,7 @@ void calculateHallTermSimple(fsgrids::perbspan perb,
    fsgrid.parallel_for([](int timerId) -> phiprof::Timer { return phiprof::Timer{timerId}; },
                        phiprof::initializeTimer("EHall compute cells"), technical,
                        [=, &sysBoundaries](const fsgrid::Coordinates &coordinates, const fsgrid::FsStencil& stencil, cuint sysBoundaryFlag, cuint sysBoundaryLayer) {
-                          calculateHallTerm(perb, ehall, moments, dperb, bgb, technical, stencil, sysBoundaries, coordinates.physicalGridSpacing);
+                          calculateHallTerm(perb, ehall, moments, dperb, bgb, stencil, sysBoundaries, coordinates.physicalGridSpacing);
                        });
 
    filterHallTerm(ehall, technical, fsgrid);
