@@ -901,18 +901,18 @@ void calculateEdgeHallTermComponents(fsgrids::perbspan perbs,
       break;
 
    case 1: {
-      const Real Bx = perb[fsgrids::bfield::PERBX] + bgbx;
-      const Real By = perb[fsgrids::bfield::PERBY] + bgby;
-      const Real Bz = perb[fsgrids::bfield::PERBZ] + bgbz;
+      const Real Bx = bgbx;
+      const Real By = bgby;
+      const Real Bz = bgbz;
 
       const Real invHallRhoqMU0 = 1.0 / (physicalconstants::MU_0 * computeHallRhoq({}));
 
-      const Real ydx = (bgb[fsgrids::bgbfield::dBGBydx] + dperb[fsgrids::dperb::dPERBydx]) / gridSpacing[0];
-      const Real zdx = (bgb[fsgrids::bgbfield::dBGBzdx] + dperb[fsgrids::dperb::dPERBzdx]) / gridSpacing[0];
-      const Real xdy = (bgb[fsgrids::bgbfield::dBGBxdy] + dperb[fsgrids::dperb::dPERBxdy]) / gridSpacing[1];
-      const Real zdy = (bgb[fsgrids::bgbfield::dBGBzdy] + dperb[fsgrids::dperb::dPERBzdy]) / gridSpacing[1];
-      const Real xdz = (bgb[fsgrids::bgbfield::dBGBxdz] + dperb[fsgrids::dperb::dPERBxdz]) / gridSpacing[2];
-      const Real ydz = (bgb[fsgrids::bgbfield::dBGBydz] + dperb[fsgrids::dperb::dPERBydz]) / gridSpacing[2];
+      const Real ydx = (bgb[fsgrids::bgbfield::dBGBydx]) / gridSpacing[0];
+      const Real zdx = (bgb[fsgrids::bgbfield::dBGBzdx]) / gridSpacing[0];
+      const Real xdy = (bgb[fsgrids::bgbfield::dBGBxdy]) / gridSpacing[1];
+      const Real zdy = (bgb[fsgrids::bgbfield::dBGBzdy]) / gridSpacing[1];
+      const Real xdz = (bgb[fsgrids::bgbfield::dBGBxdz]) / gridSpacing[2];
+      const Real ydz = (bgb[fsgrids::bgbfield::dBGBydz]) / gridSpacing[2];
 
       const Real EXHall = (Bz * (xdz - zdx) - By * (ydx - xdy)) * invHallRhoqMU0;
       ehall[fsgrids::ehall::EXHALL_000_100] = EXHall;
