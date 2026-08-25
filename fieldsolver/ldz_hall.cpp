@@ -1053,44 +1053,44 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
 
    const std::array<fsgrid::FsSize_t, 3> &globalSize = fsgrid.getGlobalSize();
 
-   Array3D EHallComponent_global(globalSize[0], globalSize[1], globalSize[2]);
-   Array3D EHallComponent_filtered(globalSize[0], globalSize[1], globalSize[2]);
+   Array3D EHallX_global(globalSize[0], globalSize[1], globalSize[2]);
+   Array3D EHallX_filtered(globalSize[0], globalSize[1], globalSize[2]);
 
    fsgrid.parallel_for(
       [](int timerId) -> phiprof::Timer { return phiprof::Timer{timerId}; },
       phiprof::initializeTimer("Collect Hall term x components"),
       technical,
 
-      [&EHallComponent_global, ehalls]
+      [&EHallX_global, ehalls]
       (const fsgrid::Coordinates &coordinates,
       const fsgrid::FsStencil& stencil,
       cuint sysBoundaryFlag,
       cuint sysBoundaryLayer
       ) {
          const std::array<fsgrid::FsSize_t, 3> globalIndices = coordinates.localToGlobal(stencil.i, stencil.j, stencil.k);
-         EHallComponent_global(globalIndices[0], globalIndices[1], globalIndices[2]) = ehalls[stencil.ooo()][fsgrids::ehall::EXHALL_000_100];
+         EHallX_global(globalIndices[0], globalIndices[1], globalIndices[2]) = ehalls[stencil.ooo()][fsgrids::ehall::EXHALL_000_100];
       });
 
    if (myRank == MASTER_RANK) {
-      MPI_Reduce(MPI_IN_PLACE, &EHallComponent_global.data[0], globalSize[0]*globalSize[1]*globalSize[2], MPI_DOUBLE, MPI_SUM, MASTER_RANK, MPI_COMM_WORLD);
+      MPI_Reduce(MPI_IN_PLACE, &EHallX_global.data[0], globalSize[0]*globalSize[1]*globalSize[2], MPI_DOUBLE, MPI_SUM, MASTER_RANK, MPI_COMM_WORLD);
    }
    else {
-      MPI_Reduce(&EHallComponent_global.data[0], nullptr, globalSize[0]*globalSize[1]*globalSize[2], MPI_DOUBLE, MPI_SUM, MASTER_RANK, MPI_COMM_WORLD);
+      MPI_Reduce(&EHallX_global.data[0], nullptr, globalSize[0]*globalSize[1]*globalSize[2], MPI_DOUBLE, MPI_SUM, MASTER_RANK, MPI_COMM_WORLD);
    }
 
    if (myRank == MASTER_RANK){
 
-      ComplexArray3D complex_buffer(globalSize[0],globalSize[1],globalSize[2]);
+      ComplexArray3D complex_buffer_X(globalSize[0],globalSize[1],globalSize[2]);
 
-      auto base_addr  = &complex_buffer.data[0];
+      auto base_addr  = &complex_buffer_X.data[0];
       fftw_plan fwd_plan = fftw_plan_dft_3d(globalSize[0],globalSize[1],globalSize[2], base_addr, base_addr, FFTW_FORWARD, FFTW_ESTIMATE);
       fftw_plan rwd_plan = fftw_plan_dft_3d(globalSize[0],globalSize[1],globalSize[2], base_addr, base_addr, FFTW_BACKWARD, FFTW_ESTIMATE);
 
       for (unsigned int i = 0; i < globalSize[0]; ++i) {
          for (unsigned int j = 0; j < globalSize[1]; ++j) {
             for (unsigned int k = 0; k < globalSize[2]; ++k) {
-               complex_buffer(i,j,k)[0] = EHallComponent_global(i,j,k);
-               complex_buffer(i,j,k)[1] = 0.0;
+               complex_buffer_X(i,j,k)[0] = EHallX_global(i,j,k);
+               complex_buffer_X(i,j,k)[1] = 0.0;
             }
          }
       }
@@ -1116,11 +1116,11 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
                double ksquared = kx*kx + ky*ky + kz*kz;
 
                if(ksquared < std::pow(10,-8)) {
-                  complex_buffer(i,j,k)[0] = complex_buffer(i,j,k)[0];
-                  complex_buffer(i,j,k)[1] = complex_buffer(i,j,k)[1];
+                  complex_buffer_X(i,j,k)[0] = complex_buffer_X(i,j,k)[0];
+                  complex_buffer_X(i,j,k)[1] = complex_buffer_X(i,j,k)[1];
                } else {
-                  complex_buffer(i,j,k)[0] = 0.;
-                  complex_buffer(i,j,k)[1] = 0.;
+                  complex_buffer_X(i,j,k)[0] = 0.;
+                  complex_buffer_X(i,j,k)[1] = 0.;
                }
             }
          }
@@ -1133,9 +1133,9 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
       for (unsigned int i = 0; i < globalSize[0]; ++i) {
          for (unsigned int j = 0; j < globalSize[1]; ++j) {
             for (unsigned int k = 0; k < globalSize[2]; ++k) {
-               max_real_mag = std::max(max_real_mag, std::abs(complex_buffer(i,j,k)[0]));
-               max_imag_mag = std::max(max_imag_mag, std::abs(complex_buffer(i,j,k)[1]));
-               EHallComponent_filtered(i,j,k) = complex_buffer(i,j,k)[0] / double(globalSize[0]*globalSize[1]*globalSize[2]); // Division comes from unnormalized nature of the FFTW transformations
+               max_real_mag = std::max(max_real_mag, std::abs(complex_buffer_X(i,j,k)[0]));
+               max_imag_mag = std::max(max_imag_mag, std::abs(complex_buffer_X(i,j,k)[1]));
+               EHallX_filtered(i,j,k) = complex_buffer_X(i,j,k)[0] / double(globalSize[0]*globalSize[1]*globalSize[2]); // Division comes from unnormalized nature of the FFTW transformations
             }
          }
       }
@@ -1149,7 +1149,7 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
    }
 
    // Use MPI_Broadcast from MASTER_RANK to update everyone on the value of phi
-   MPI_Bcast(&EHallComponent_filtered.data[0], globalSize[0]*globalSize[1]*globalSize[2], MPI_DOUBLE, MASTER_RANK, MPI_COMM_WORLD);
+   MPI_Bcast(&EHallX_filtered.data[0], globalSize[0]*globalSize[1]*globalSize[2], MPI_DOUBLE, MASTER_RANK, MPI_COMM_WORLD);
 
    // Distribute local values of Phi
    fsgrid.serial_for(
@@ -1157,14 +1157,14 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
       phiprof::initializeTimer("set local values of Phi"),
       technical,
 
-      [&ehalls,&EHallComponent_filtered,myRank]
+      [&ehalls,&EHallX_filtered,myRank]
       (const fsgrid::Coordinates &coordinates,
       const fsgrid::FsStencil& stencil,
       cuint sysBoundaryFlag,
       cuint sysBoundaryLayer
       ) {
          const std::array<fsgrid::FsSize_t, 3> globalIndices = coordinates.localToGlobal(stencil.i, stencil.j, stencil.k);
-         const Real val = EHallComponent_filtered(globalIndices[0], globalIndices[1], globalIndices[2]);
+         const Real val = EHallX_filtered(globalIndices[0], globalIndices[1], globalIndices[2]);
 
          ehalls[stencil.ooo()][fsgrids::ehall::EXHALL_000_100] = val;
          ehalls[stencil.ooo()][fsgrids::ehall::EXHALL_010_110] = val;
@@ -1172,41 +1172,44 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
          ehalls[stencil.ooo()][fsgrids::ehall::EXHALL_011_111] = val;
       });
 
+   Array3D EHallY_global(globalSize[0], globalSize[1], globalSize[2]);
+   Array3D EHallY_filtered(globalSize[0], globalSize[1], globalSize[2]);
+
    fsgrid.parallel_for(
       [](int timerId) -> phiprof::Timer { return phiprof::Timer{timerId}; },
-      phiprof::initializeTimer("Collect Hall term x components"),
+      phiprof::initializeTimer("Collect Hall term y components"),
       technical,
 
-      [&EHallComponent_global, ehalls]
+      [&EHallY_global, ehalls]
       (const fsgrid::Coordinates &coordinates,
       const fsgrid::FsStencil& stencil,
       cuint sysBoundaryFlag,
       cuint sysBoundaryLayer
       ) {
          const std::array<fsgrid::FsSize_t, 3> globalIndices = coordinates.localToGlobal(stencil.i, stencil.j, stencil.k);
-         EHallComponent_global(globalIndices[0], globalIndices[1], globalIndices[2]) = ehalls[stencil.ooo()][fsgrids::ehall::EYHALL_000_010];
+         EHallY_global(globalIndices[0], globalIndices[1], globalIndices[2]) = ehalls[stencil.ooo()][fsgrids::ehall::EYHALL_000_010];
       });
 
    if (myRank == MASTER_RANK) {
-      MPI_Reduce(MPI_IN_PLACE, &EHallComponent_global.data[0], globalSize[0]*globalSize[1]*globalSize[2], MPI_DOUBLE, MPI_SUM, MASTER_RANK, MPI_COMM_WORLD);
+      MPI_Reduce(MPI_IN_PLACE, &EHallY_global.data[0], globalSize[0]*globalSize[1]*globalSize[2], MPI_DOUBLE, MPI_SUM, MASTER_RANK, MPI_COMM_WORLD);
    }
    else {
-      MPI_Reduce(&EHallComponent_global.data[0], nullptr, globalSize[0]*globalSize[1]*globalSize[2], MPI_DOUBLE, MPI_SUM, MASTER_RANK, MPI_COMM_WORLD);
+      MPI_Reduce(&EHallY_global.data[0], nullptr, globalSize[0]*globalSize[1]*globalSize[2], MPI_DOUBLE, MPI_SUM, MASTER_RANK, MPI_COMM_WORLD);
    }
 
    if (myRank == MASTER_RANK){
 
-      ComplexArray3D complex_buffer(globalSize[0],globalSize[1],globalSize[2]);
+      ComplexArray3D complex_buffer_Y(globalSize[0],globalSize[1],globalSize[2]);
 
-      auto base_addr  = &complex_buffer.data[0];
+      auto base_addr  = &complex_buffer_Y.data[0];
       fftw_plan fwd_plan = fftw_plan_dft_3d(globalSize[0],globalSize[1],globalSize[2], base_addr, base_addr, FFTW_FORWARD, FFTW_ESTIMATE);
       fftw_plan rwd_plan = fftw_plan_dft_3d(globalSize[0],globalSize[1],globalSize[2], base_addr, base_addr, FFTW_BACKWARD, FFTW_ESTIMATE);
 
       for (unsigned int i = 0; i < globalSize[0]; ++i) {
          for (unsigned int j = 0; j < globalSize[1]; ++j) {
             for (unsigned int k = 0; k < globalSize[2]; ++k) {
-               complex_buffer(i,j,k)[0] = EHallComponent_global(i,j,k);
-               complex_buffer(i,j,k)[1] = 0.0;
+               complex_buffer_Y(i,j,k)[0] = EHallY_global(i,j,k);
+               complex_buffer_Y(i,j,k)[1] = 0.0;
             }
          }
       }
@@ -1232,11 +1235,11 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
                double ksquared = kx*kx + ky*ky + kz*kz;
 
                if(ksquared < std::pow(10,-8)) {
-                  complex_buffer(i,j,k)[0] = complex_buffer(i,j,k)[0];
-                  complex_buffer(i,j,k)[1] = complex_buffer(i,j,k)[1];
+                  complex_buffer_Y(i,j,k)[0] = complex_buffer_Y(i,j,k)[0];
+                  complex_buffer_Y(i,j,k)[1] = complex_buffer_Y(i,j,k)[1];
                } else {
-                  complex_buffer(i,j,k)[0] = 0.;
-                  complex_buffer(i,j,k)[1] = 0.;
+                  complex_buffer_Y(i,j,k)[0] = 0.;
+                  complex_buffer_Y(i,j,k)[1] = 0.;
                }
             }
          }
@@ -1251,9 +1254,9 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
       for (unsigned int i = 0; i < globalSize[0]; ++i) {
          for (unsigned int j = 0; j < globalSize[1]; ++j) {
             for (unsigned int k = 0; k < globalSize[2]; ++k) {
-               max_real_mag = std::max(max_real_mag, std::abs(complex_buffer(i,j,k)[0]));
-               max_imag_mag = std::max(max_imag_mag, std::abs(complex_buffer(i,j,k)[1]));
-               EHallComponent_filtered(i,j,k) = complex_buffer(i,j,k)[0] / double(globalSize[0]*globalSize[1]*globalSize[2]); // Division comes from unnormalized nature of the FFTW transformations
+               max_real_mag = std::max(max_real_mag, std::abs(complex_buffer_Y(i,j,k)[0]));
+               max_imag_mag = std::max(max_imag_mag, std::abs(complex_buffer_Y(i,j,k)[1]));
+               EHallY_filtered(i,j,k) = complex_buffer_Y(i,j,k)[0] / double(globalSize[0]*globalSize[1]*globalSize[2]); // Division comes from unnormalized nature of the FFTW transformations
             }
          }
       }
@@ -1266,21 +1269,21 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
       fftw_destroy_plan(rwd_plan);
    }
 
-   MPI_Bcast(&EHallComponent_filtered.data[0], globalSize[0]*globalSize[1]*globalSize[2], MPI_DOUBLE, MASTER_RANK, MPI_COMM_WORLD);
+   MPI_Bcast(&EHallY_filtered.data[0], globalSize[0]*globalSize[1]*globalSize[2], MPI_DOUBLE, MASTER_RANK, MPI_COMM_WORLD);
 
    fsgrid.serial_for(
       [](int timerId) -> phiprof::Timer { return phiprof::Timer{timerId}; },
       phiprof::initializeTimer("set new E hall y filtered components"),
       technical,
 
-      [&ehalls,&EHallComponent_filtered,myRank]
+      [&ehalls,&EHallY_filtered,myRank]
       (const fsgrid::Coordinates &coordinates,
       const fsgrid::FsStencil& stencil,
       cuint sysBoundaryFlag,
       cuint sysBoundaryLayer
       ) {
          const std::array<fsgrid::FsSize_t, 3> globalIndices = coordinates.localToGlobal(stencil.i, stencil.j, stencil.k);
-         const Real val = EHallComponent_filtered(globalIndices[0], globalIndices[1], globalIndices[2]);
+         const Real val = EHallY_filtered(globalIndices[0], globalIndices[1], globalIndices[2]);
          
          ehalls[stencil.ooo()][fsgrids::ehall::EYHALL_000_010] = val;
          ehalls[stencil.ooo()][fsgrids::ehall::EYHALL_100_110] = val;
@@ -1288,41 +1291,44 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
          ehalls[stencil.ooo()][fsgrids::ehall::EYHALL_001_011] = val;
       });
 
-   /*fsgrid.parallel_for(
+   Array3D EHallZ_global(globalSize[0], globalSize[1], globalSize[2]);
+   Array3D EHallZ_filtered(globalSize[0], globalSize[1], globalSize[2]);
+
+   fsgrid.parallel_for(
       [](int timerId) -> phiprof::Timer { return phiprof::Timer{timerId}; },
       phiprof::initializeTimer("Collect Hall term z components"),
       technical,
 
-      [&EHallComponent_global, ehalls]
+      [&EHallZ_global, ehalls]
       (const fsgrid::Coordinates &coordinates,
       const fsgrid::FsStencil& stencil,
       cuint sysBoundaryFlag,
       cuint sysBoundaryLayer
       ) {
          const std::array<fsgrid::FsSize_t, 3> globalIndices = coordinates.localToGlobal(stencil.i, stencil.j, stencil.k);
-         EHallComponent_global(globalIndices[0], globalIndices[1], globalIndices[2]) = ehalls[stencil.ooo()][fsgrids::ehall::EZHALL_000_001];
+         EHallZ_global(globalIndices[0], globalIndices[1], globalIndices[2]) = ehalls[stencil.ooo()][fsgrids::ehall::EZHALL_000_001];
       });
 
    if (myRank == MASTER_RANK) {
-      MPI_Reduce(MPI_IN_PLACE, &EHallComponent_global.data[0], globalSize[0]*globalSize[1]*globalSize[2], MPI_DOUBLE, MPI_SUM, MASTER_RANK, MPI_COMM_WORLD);
+      MPI_Reduce(MPI_IN_PLACE, &EHallZ_global.data[0], globalSize[0]*globalSize[1]*globalSize[2], MPI_DOUBLE, MPI_SUM, MASTER_RANK, MPI_COMM_WORLD);
    }
    else {
-      MPI_Reduce(&EHallComponent_global.data[0], nullptr, globalSize[0]*globalSize[1]*globalSize[2], MPI_DOUBLE, MPI_SUM, MASTER_RANK, MPI_COMM_WORLD);
+      MPI_Reduce(&EHallZ_global.data[0], nullptr, globalSize[0]*globalSize[1]*globalSize[2], MPI_DOUBLE, MPI_SUM, MASTER_RANK, MPI_COMM_WORLD);
    }
 
    if (myRank == MASTER_RANK){
 
-      ComplexArray3D complex_buffer(globalSize[0],globalSize[1],globalSize[2]);
+      ComplexArray3D complex_buffer_Z(globalSize[0],globalSize[1],globalSize[2]);
 
-      auto base_addr  = &complex_buffer.data[0];
+      auto base_addr  = &complex_buffer_Z.data[0];
       fftw_plan fwd_plan = fftw_plan_dft_3d(globalSize[0],globalSize[1],globalSize[2], base_addr, base_addr, FFTW_FORWARD, FFTW_ESTIMATE);
       fftw_plan rwd_plan = fftw_plan_dft_3d(globalSize[0],globalSize[1],globalSize[2], base_addr, base_addr, FFTW_BACKWARD, FFTW_ESTIMATE);
 
       for (unsigned int i = 0; i < globalSize[0]; ++i) {
          for (unsigned int j = 0; j < globalSize[1]; ++j) {
             for (unsigned int k = 0; k < globalSize[2]; ++k) {
-               complex_buffer(i,j,k)[0] = EHallComponent_global(i,j,k);
-               complex_buffer(i,j,k)[1] = 0.0;
+               complex_buffer_Z(i,j,k)[0] = EHallZ_global(i,j,k);
+               complex_buffer_Z(i,j,k)[1] = 0.0;
             }
          }
       }
@@ -1347,12 +1353,12 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
 
                double ksquared = kx*kx + ky*ky + kz*kz;
 
-               if(true) {
-                  complex_buffer(i,j,k)[0] = complex_buffer(i,j,k)[0];
-                  complex_buffer(i,j,k)[1] = complex_buffer(i,j,k)[1];
+               if(ksquared < std::pow(10,-8)) {
+                  complex_buffer_Z(i,j,k)[0] = complex_buffer_Z(i,j,k)[0];
+                  complex_buffer_Z(i,j,k)[1] = complex_buffer_Z(i,j,k)[1];
                } else {
-                  complex_buffer(i,j,k)[0] = 0.;
-                  complex_buffer(i,j,k)[1] = 0.;
+                  complex_buffer_Z(i,j,k)[0] = 0.;
+                  complex_buffer_Z(i,j,k)[1] = 0.;
                }
             }
          }
@@ -1367,9 +1373,9 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
       for (unsigned int i = 0; i < globalSize[0]; ++i) {
          for (unsigned int j = 0; j < globalSize[1]; ++j) {
             for (unsigned int k = 0; k < globalSize[2]; ++k) {
-               max_real_mag = std::max(max_real_mag, std::abs(complex_buffer(i,j,k)[0]));
-               max_imag_mag = std::max(max_imag_mag, std::abs(complex_buffer(i,j,k)[1]));
-               EHallComponent_filtered(i,j,k) = complex_buffer(i,j,k)[0] / double(globalSize[0]*globalSize[1]*globalSize[2]); // Division comes from unnormalized nature of the FFTW transformations
+               max_real_mag = std::max(max_real_mag, std::abs(complex_buffer_Z(i,j,k)[0]));
+               max_imag_mag = std::max(max_imag_mag, std::abs(complex_buffer_Z(i,j,k)[1]));
+               EHallZ_filtered(i,j,k) = complex_buffer_Z(i,j,k)[0] / double(globalSize[0]*globalSize[1]*globalSize[2]); // Division comes from unnormalized nature of the FFTW transformations
             }
          }
       }
@@ -1383,7 +1389,7 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
    }
 
    // Use MPI_Broadcast from MASTER_RANK to update everyone on the value of phi
-   MPI_Bcast(&EHallComponent_filtered.data[0], globalSize[0]*globalSize[1]*globalSize[2], MPI_DOUBLE, MASTER_RANK, MPI_COMM_WORLD);
+   MPI_Bcast(&EHallZ_filtered.data[0], globalSize[0]*globalSize[1]*globalSize[2], MPI_DOUBLE, MASTER_RANK, MPI_COMM_WORLD);
 
    // Distribute local values of Phi
    fsgrid.serial_for(
@@ -1391,20 +1397,20 @@ void filterHallTerm(fsgrids::ehallspan ehalls,
       phiprof::initializeTimer("set local values of Phi"),
       technical,
 
-      [&ehalls,&EHallComponent_filtered,myRank]
+      [&ehalls,&EHallZ_filtered,myRank]
       (const fsgrid::Coordinates &coordinates,
       const fsgrid::FsStencil& stencil,
       cuint sysBoundaryFlag,
       cuint sysBoundaryLayer
       ) {
          const std::array<fsgrid::FsSize_t, 3> globalIndices = coordinates.localToGlobal(stencil.i, stencil.j, stencil.k);
-         const Real val = EHallComponent_filtered(globalIndices[0], globalIndices[1], globalIndices[2]);
+         const Real val = EHallZ_filtered(globalIndices[0], globalIndices[1], globalIndices[2]);
          
          ehalls[stencil.ooo()][fsgrids::ehall::EZHALL_000_001] = val;
          ehalls[stencil.ooo()][fsgrids::ehall::EZHALL_100_101] = val;
          ehalls[stencil.ooo()][fsgrids::ehall::EZHALL_110_111] = val;
          ehalls[stencil.ooo()][fsgrids::ehall::EZHALL_010_011] = val;
-      });*/
+      });
 
       //fsgrid.updateGhostCells(ehalls);
 }
