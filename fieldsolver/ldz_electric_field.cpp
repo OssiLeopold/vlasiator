@@ -386,15 +386,11 @@ struct UpwindField {
       Real efield = apos * bpos * E_NE + apos * bneg * E_SE + aneg * bpos * E_NW + aneg * bneg * E_SW;
       efield /= ((apos + aneg) * (bpos + bneg) + EPS);
       if (Parameters::fieldSolverDiffusiveEterms) {
-#ifdef FS_1ST_ORDER_SPACE
+
          // 1st order diffusive terms:
          efield -= bpos * bneg / (bpos + bneg + EPS) * (perB_S - perB_N);
          efield += apos * aneg / (apos + aneg + EPS) * (perB_W - perB_E);
-#else
-         // 2nd     order diffusive terms
-         efield -= bpos * bneg / (bpos + bneg + EPS) * ((perB_S - HALF * dperB_S) - (perB_N + HALF * dperB_N));
-         efield += apos * aneg / (apos + aneg + EPS) * ((perB_W - HALF * dperB_W) - (perB_E + HALF * dperB_E));
-#endif
+
       }
 
       return efield;
