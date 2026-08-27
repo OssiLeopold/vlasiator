@@ -392,8 +392,8 @@ struct UpwindField {
          efield += apos * aneg / (apos + aneg + EPS) * (perB_W - perB_E);
 #else
          // 2nd     order diffusive terms
-         efield -= bpos * bneg / (bpos + bneg + EPS) * ((perB_S - dperB_S) - (perB_N + dperB_N));
-         efield += apos * aneg / (apos + aneg + EPS) * ((perB_W - dperB_W) - (perB_E + dperB_E));
+         efield -= bpos * bneg / (bpos + bneg + EPS) * ((perB_S - FOURTH * dperB_S) - (perB_N + FOURTH * dperB_N));
+         efield += apos * aneg / (apos + aneg + EPS) * ((perB_W - FOURTH * dperB_W) - (perB_E + FOURTH * dperB_E));
 #endif
       }
 
