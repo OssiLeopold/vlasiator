@@ -51,6 +51,7 @@ const Real MINUS   = -1.0;
 const Real PLUS    = +1.0;
 const Real THIRD   = 1.0/3.0;
 const Real FOURTH  = 1.0/4.0;
+const Real THREEFOURTHS = 3.0/4.0;
 const Real SIXTH   = 1.0/6.0;
 const Real EIGTH   = 1.0/8.0;
 const Real TENTH   = 1.0/10.0;
