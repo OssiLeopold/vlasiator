@@ -82,8 +82,32 @@ template<typename T> inline T vanLeer(const T& left,const T& cent,const T& right
    return fabs(denumerator) < EPSILON ? ZERO : TWO * numerator / denumerator;
 }
 
+template<typename T> inline T minmod3(const T& a, const T& b, const T& c) {
+   static constexpr T ZERO = 0.0;
+
+   if (a > ZERO && b > ZERO && c > ZERO) {
+      return std::min(a, std::min(b, c));
+   }
+
+   if (a < ZERO && b < ZERO && c < ZERO) {
+      return std::max(a, std::max(b, c));
+   }
+
+   return ZERO;
+}
+
+template<typename T> inline T koren(const T& left, const T& cent, const T& right) {
+   static constexpr T TWO = 2.0;
+   static constexpr T THREE = 3.0;
+
+   const T dl = cent - left;
+   const T dr = right - cent;
+
+   return minmod3(TWO * dl, (dl + TWO * dr) / THREE, TWO * dr);
+}
+
 template<typename T> inline T limiter(const T& left,const T& cent,const T& rght) {
-   return superbee(left, cent, rght);
+   return koren(left, cent, rght);
 }
 
 /*! Select the limiter to be used in the field solver. */
