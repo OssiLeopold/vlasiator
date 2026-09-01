@@ -107,7 +107,7 @@ template<typename T> inline T koren(const T& left, const T& cent, const T& right
 }
 
 template<typename T> inline T limiter(const T& left,const T& cent,const T& rght) {
-   return koren(left, cent, rght);
+   return superbee(left, cent, rght);
 }
 
 /*! Select the limiter to be used in the field solver. */
