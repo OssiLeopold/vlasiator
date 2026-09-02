@@ -131,7 +131,7 @@ void computePerbDerivatives(fsgrids::perbspan perb,
    auto computeDiff = [](const auto& i, const auto& right, const auto& left) { return 0.5 * (right[i] - left[i]); };
 
    auto computeLimiter = [](const auto& i, const auto& right, const auto& left, const auto& center) {
-      return limiter(left[i], center[i], right[i]);
+      return limiterB(left[i], center[i], right[i]);
    };
    const DerivativesData perbData{
        perb[stencil.ooo()], perb[stencil.poo()], perb[stencil.moo()], perb[stencil.opo()],

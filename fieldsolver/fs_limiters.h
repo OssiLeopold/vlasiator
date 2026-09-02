@@ -107,6 +107,10 @@ template<typename T> inline T koren(const T& left, const T& cent, const T& right
 }
 
 template<typename T> inline T limiter(const T& left,const T& cent,const T& rght) {
+   return vanLeer(left, cent, rght);
+}
+
+template<typename T> inline T limiterB(const T& left,const T& cent,const T& rght) {
    return superbee(left, cent, rght);
 }
 
