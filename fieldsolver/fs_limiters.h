@@ -106,7 +106,7 @@ template<typename T> inline T koren(const T& left, const T& cent, const T& right
    return minmod3(TWO * dl, (dl + TWO * dr) / THREE, TWO * dr);
 }
 
-template<typename T> inline T sweby(const T& left,const T& cent,const T& right,const T& beta=1.4) {
+template<typename T> inline T sweby(const T& left,const T& cent,const T& right,const T& beta=1.3) {
    const T HALF = 0.5;
 
    const T back = cent-left;
