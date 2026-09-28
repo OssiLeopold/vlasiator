@@ -127,7 +127,7 @@ template<typename T> inline T hybridsweby(const T& left,const T& cent,const T& r
 }
 
 template<typename T> inline T limiter(const T& left,const T& cent,const T& rght) {
-   return sweby(left, cent, rght);
+   return hybridsweby(left, cent, rght);
 }
 
 /*! Select the limiter to be used in the field solver. */
