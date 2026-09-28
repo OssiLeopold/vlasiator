@@ -116,7 +116,7 @@ template<typename T> inline T sweby(const T& left,const T& cent,const T& right,c
    return HALF*(sign(back)+sign(forw))*tmp;
 }
 
-template<typename T> inline T hybridsweby(const T& left,const T& cent,const T& right,const T& beta1=2.0,const T& beta2=1.5) {
+template<typename T> inline T hybridsweby(const T& left,const T& cent,const T& right,const T& beta1=2.0,const T& beta2=1.0) {
    const T HALF = 0.5;
 
    const T back = cent-left;
