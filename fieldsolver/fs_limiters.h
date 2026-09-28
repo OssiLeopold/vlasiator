@@ -116,6 +116,16 @@ template<typename T> inline T sweby(const T& left,const T& cent,const T& right,c
    return HALF*(sign(back)+sign(forw))*tmp;
 }
 
+template<typename T> inline T hybridsweby(const T& left,const T& cent,const T& right,const T& beta1=2.0,const T& beta2=1.5) {
+   const T HALF = 0.5;
+
+   const T back = cent-left;
+   const T forw = right-cent;
+   const T tmp = std::max(std::min(beta1*fabs(back),fabs(forw)),
+                           std::min(fabs(back),beta2*fabs(forw)));
+   return HALF*(sign(back)+sign(forw))*tmp;
+}
+
 template<typename T> inline T limiter(const T& left,const T& cent,const T& rght) {
    return sweby(left, cent, rght);
 }
