@@ -106,7 +106,7 @@ template<typename T> inline T koren(const T& left, const T& cent, const T& right
    return minmod3(TWO * dl, (dl + TWO * dr) / THREE, TWO * dr);
 }
 
-template<typename T> inline T sweby(const T& left,const T& cent,const T& right,const T& beta=1.3) {
+template<typename T> inline T sweby(const T& left,const T& cent,const T& right,const T& beta=1.5) {
    const T HALF = 0.5;
 
    const T back = cent-left;
@@ -127,7 +127,7 @@ template<typename T> inline T hybridsweby(const T& left,const T& cent,const T& r
 }
 
 template<typename T> inline T limiter(const T& left,const T& cent,const T& rght) {
-   return hybridsweby(left, cent, rght);
+   return sweby(left, cent, rght);
 }
 
 /*! Select the limiter to be used in the field solver. */
