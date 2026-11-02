@@ -43,8 +43,8 @@ Turbulence::~Turbulence() {}
 void Turbulence::addParameters() {
    typedef Readparameters RP;
    
-   RP::add("Turbulence.numberOfWaves", "Number of waves in the simulation", this->nWaves, 1);
-   RP::add("Turbulence.amplitude", "Velocity amplitude (m/s)", this->amplitude, 1e4);
+   RP::add<Real>("Turbulence.numberOfWaves", "Number of waves in the simulation", this->nWaves, 1);
+   RP::add<Real>("Turbulence.amplitude", "Velocity amplitude (m/s)", this->amplitude, 1e4);
    RP::add<Real>("Turbulence.n0", "Background density (1/m^3)", this -> n0, 1e6);
    RP::add<Real>("Turbulence.B", "Background magnetic field strength (T)", this->B, 1e-8);
    RP::add<Real>("Turbulence.T", "Temperature (K)", this->T, 1e6);
