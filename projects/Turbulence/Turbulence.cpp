@@ -51,7 +51,7 @@ void Turbulence::addParameters() {
    RP::add<Real>("Turbulence.spectralIndex", "Power law index for initial spectrum", this->spectralIndex,-5.0/3.0);
    RP::add<int>("Turbulence.randomSeed", "Seed for random phase generation", this->randomSeed, 12345);
    RP::add<int>("Turbulence.numberOfPossible", "How many possible wavelengths will be generated to pick from", this->n_possible, 8);
-   RP::add<int>("Turbulence.verbose", "Verbose output", this->verbose, 1);
+   RP::add<bool>("Turbulence.verbose", "Verbose output", this->verbose, 1);
 }
 
 void Turbulence::getParameters() {
