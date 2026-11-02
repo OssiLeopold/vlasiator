@@ -31,13 +31,6 @@
 #include "../velocity_mesh_parameters.h"
 
 #include "Alfven/Alfven.h"
-<<<<<<< HEAD
-//#include "AlfvenCascade/AlfvenCascade.h"
-//#include "CircularAlfven/CircularAlfven.h"
-//#include "MultiCircularAlfven/MultiCircularAlfven.h"
-#include "Diffusion/Diffusion.h"
-=======
->>>>>>> upstream/dev
 #include "Dispersion/Dispersion.h"
 #include "Distributions/Distributions.h"
 #include "Flowthrough/Flowthrough.h"
@@ -78,39 +71,7 @@ namespace projects {
 
    Project::~Project() { }
 
-<<<<<<< HEAD
-   void Project::addParameters() {
-      typedef Readparameters RP;
-      // TODO add all projects' static addParameters() functions here.
-      projects::Alfven::addParameters();
-      // projects::AlfvenCascade::addParameters();
-      // projects::CircularAlfven::addParameters();
-      // projects::MultiCircularAlfven::addParameters();
-      projects::Diffusion::addParameters();
-      projects::Dispersion::addParameters();
-      projects::Distributions::addParameters();
-      projects::Firehose::addParameters();
-      projects::Flowthrough::addParameters();
-      projects::Fluctuations::addParameters();
-      projects::Harris::addParameters();
-      projects::KHB::addParameters();
-      projects::Larmor::addParameters();
-      projects::Magnetosphere::addParameters();
-      projects::MultiPeak::addParameters();
-      projects::Riemann1::addParameters();
-      projects::Shock::addParameters();
-      projects::IPShock::addParameters();
-      projects::Template::addParameters();
-      projects::test_fp::addParameters();
-      projects::TestHall::addParameters();
-      projects::Turbulence::addParameters();
-      projects::verificationLarmor::addParameters();
-      projects::Shocktest::addParameters();
-      projects::LossCone::addParameters();
-      RP::add("Project_common.seed", "Seed for the RNG", 42);
-=======
    void Project::addCommonParameters() {
->>>>>>> upstream/dev
 
       Readparameters::add<uint>("Project_common.seed", "Seed for the RNG", this->seed,42);
    }
@@ -685,6 +646,7 @@ Project* createProject() {
         projects::Shock* _Shock = new projects::Shock();
         projects::Shocktest* _Shocktest = new projects::Shocktest();
         projects::Distributions* _Distributions=new projects::Distributions();
+        projects::Turbulence* _Turbulence=new projects::Trubulence();
 
         _Multipeak->addCommonParameters();
         _Multipeak->addParameters();
@@ -704,6 +666,7 @@ Project* createProject() {
         _Dispersion->addParameters();
         _Shock->addParameters();
         _Shocktest->addParameters();
+        _Turbulence->addParameters();
 
         return nullptr;
 
@@ -768,6 +731,9 @@ Project* createProject() {
     } else if (Parameters::projectName=="Template") {
         project=new projects::Template();
 
+    } else if (Parameters::projectName=="Turbulence") {
+        project=new projects::Turbulence();
+    
     } else {
         cerr << "Unknown project name! = "<<Parameters::projectName << endl;
         abort();
@@ -776,77 +742,7 @@ Project* createProject() {
    if (!project) {
       cerr << "Something went wrong with setting a project! Project value null" << endl;
       abort();
-<<<<<<< HEAD
-   }
-   if(Parameters::projectName == "Alfven") {
-      rvalue = new projects::Alfven;
-   }
-   if(Parameters::projectName == "Diffusion") {
-      rvalue = new projects::Diffusion;
-   }
-   if(Parameters::projectName == "Dispersion") {
-      rvalue = new projects::Dispersion;
-   }
-   if(Parameters::projectName == "Distributions") {
-      rvalue = new projects::Distributions;
-   }
-   if(Parameters::projectName == "Firehose") {
-      rvalue = new projects::Firehose;
-   }
-   if(Parameters::projectName == "Flowthrough") {
-      rvalue = new projects::Flowthrough;
-   }
-   if(Parameters::projectName == "Fluctuations") {
-      rvalue = new projects::Fluctuations;
-   }
-   if(Parameters::projectName == "Harris") {
-      rvalue = new projects::Harris;
-   }
-   if(Parameters::projectName == "KHB") {
-      rvalue = new projects::KHB;
-   }
-   if(Parameters::projectName == "Larmor") {
-      rvalue = new projects::Larmor;
-   }
-   if(Parameters::projectName == "Magnetosphere") {
-      rvalue = new projects::Magnetosphere;
-   }
-   if(Parameters::projectName == "MultiPeak") {
-      rvalue = new projects::MultiPeak;
-   }
-   if(Parameters::projectName == "Riemann1") {
-      rvalue = new projects::Riemann1;
-   }
-   if(Parameters::projectName == "Shock") {
-      rvalue = new projects::Shock;
-   }
-   if(Parameters::projectName == "IPShock") {
-      rvalue = new projects::IPShock;
-   }
-   if(Parameters::projectName == "Template") {
-      rvalue = new projects::Template;
-   }
-   if(Parameters::projectName == "test_fp") {
-      rvalue = new projects::test_fp;
-   }
-   if(Parameters::projectName == "testHall") {
-      rvalue = new projects::TestHall;
-   }
-   if(Parameters::projectName == "Turbulence") {
-      rvalue = new projects::Turbulence;
-   }
-   if(Parameters::projectName == "verificationLarmor") {
-      rvalue = new projects::verificationLarmor;
-   }
-   if(Parameters::projectName == "Shocktest") {
-      rvalue = new projects::Shocktest;
-   }
-   if(Parameters::projectName == "LossCone") {
-      rvalue = new projects::LossCone;
-   }
-=======
     }
->>>>>>> upstream/dev
 
    project->addParameters();
    project->addCommonParameters();
