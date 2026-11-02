@@ -43,33 +43,32 @@ Turbulence::~Turbulence() {}
 void Turbulence::addParameters() {
    typedef Readparameters RP;
    
-   RP::add("Turbulence.numberOfWaves", "Number of waves in the simulation", 1);
-   RP::add("Turbulence.amplitude", "Velocity amplitude (m/s)", 1e4);
-   
-   RP::add("Turbulence.n0", "Background density (1/m^3)", 1e6);
-   RP::add("Turbulence.B", "Background magnetic field strength (T)", 1e-8);
-   RP::add("Turbulence.T", "Temperature (K)", 1e6);
-   RP::add("Turbulence.spectralIndex", "Power law index for initial spectrum", -5.0/3.0);
-   RP::add("Turbulence.randomSeed", "Seed for random phase generation", 12345);
-   RP::add("Turbulence.numberOfPossible", "How many possible wavelengths will be generated to pick from", 8);
-   RP::add("Turbulence.verbose", "Verbose output", 1);
+   RP::add("Turbulence.numberOfWaves", "Number of waves in the simulation", this->nWaves, 1);
+   RP::add("Turbulence.amplitude", "Velocity amplitude (m/s)", this->amplitude, 1e4);
+   RP::add<Real>("Turbulence.n0", "Background density (1/m^3)", this -> n0, 1e6);
+   RP::add<Real>("Turbulence.B", "Background magnetic field strength (T)", this->B, 1e-8);
+   RP::add<Real>("Turbulence.T", "Temperature (K)", this->T, 1e6);
+   RP::add<Real>("Turbulence.spectralIndex", "Power law index for initial spectrum", this->spectralIndex,-5.0/3.0);
+   RP::add<Real>("Turbulence.randomSeed", "Seed for random phase generation", this->randomSeed, 12345);
+   RP::add<Real>("Turbulence.numberOfPossible", "How many possible wavelengths will be generated to pick from", this->n_possible, 8);
+   RP::add<Real>("Turbulence.verbose", "Verbose output", this->verbose, 1);
 }
 
 void Turbulence::getParameters() {
-   typedef Readparameters RP;
-   Project::getParameters();
+   //typedef Readparameters RP;
+   //Project::getParameters();
 
-   RP::get("Turbulence.numberOfWaves", nWaves);
-   RP::get("Turbulence.amplitude", amplitude);
-   RP::get("Turbulence.numberOfPossible", n_possible);
+   //RP::get("Turbulence.numberOfWaves", nWaves);
+   //RP::get("Turbulence.amplitude", amplitude);
+   //RP::get("Turbulence.numberOfPossible", n_possible);
 
    // Get scalar parameters
-   RP::get("Turbulence.n0", n0);
-   RP::get("Turbulence.B", B);
-   RP::get("Turbulence.T", T);
-   RP::get("Turbulence.spectralIndex", spectralIndex);
-   RP::get("Turbulence.randomSeed", randomSeed);
-   RP::get("Turbulence.verbose", verbose);
+   //RP::get("Turbulence.n0", n0);
+   //RP::get("Turbulence.B", B);
+   //RP::get("Turbulence.T", T);
+   //RP::get("Turbulence.spectralIndex", spectralIndex);
+   //RP::get("Turbulence.randomSeed", randomSeed);
+   //RP::get("Turbulence.verbose", verbose);
 }
 
 bool Turbulence::initialize(void) {
