@@ -43,15 +43,15 @@ Turbulence::~Turbulence() {}
 void Turbulence::addParameters() {
    typedef Readparameters RP;
    
-   RP::add<Real>("Turbulence.numberOfWaves", "Number of waves in the simulation", this->nWaves, 1);
+   RP::add<int>("Turbulence.numberOfWaves", "Number of waves in the simulation", this->nWaves, 1);
    RP::add<Real>("Turbulence.amplitude", "Velocity amplitude (m/s)", this->amplitude, 1e4);
    RP::add<Real>("Turbulence.n0", "Background density (1/m^3)", this -> n0, 1e6);
    RP::add<Real>("Turbulence.B", "Background magnetic field strength (T)", this->B, 1e-8);
    RP::add<Real>("Turbulence.T", "Temperature (K)", this->T, 1e6);
    RP::add<Real>("Turbulence.spectralIndex", "Power law index for initial spectrum", this->spectralIndex,-5.0/3.0);
-   RP::add<Real>("Turbulence.randomSeed", "Seed for random phase generation", this->randomSeed, 12345);
-   RP::add<Real>("Turbulence.numberOfPossible", "How many possible wavelengths will be generated to pick from", this->n_possible, 8);
-   RP::add<Real>("Turbulence.verbose", "Verbose output", this->verbose, 1);
+   RP::add<int>("Turbulence.randomSeed", "Seed for random phase generation", this->randomSeed, 12345);
+   RP::add<int>("Turbulence.numberOfPossible", "How many possible wavelengths will be generated to pick from", this->n_possible, 8);
+   RP::add<int>("Turbulence.verbose", "Verbose output", this->verbose, 1);
 }
 
 void Turbulence::getParameters() {
