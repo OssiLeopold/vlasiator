@@ -40,7 +40,7 @@ namespace projects {
       virtual ~Turbulence();
 
       virtual bool initialize(void) override;
-      static void addParameters(void);
+      static void addParameters(void) override;
       virtual void getParameters(void) override;
       virtual void setProjectBField(fsgrids::perbspan perb, fsgrids::bgbspan bgb,
                                     fsgrids::technicalspan technical, FieldSolverGrid &fsgrid) override;
