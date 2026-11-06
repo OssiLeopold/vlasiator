@@ -646,6 +646,7 @@ Project* createProject() {
         projects::Shock* _Shock = new projects::Shock();
         projects::Shocktest* _Shocktest = new projects::Shocktest();
         projects::Distributions* _Distributions=new projects::Distributions();
+        projects::Turbulence _Turbulence=new projecs::Turbulence();
 
         _Multipeak->addCommonParameters();
         _Multipeak->addParameters();
